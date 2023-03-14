@@ -14,10 +14,23 @@ public class UserController : Controller
 {
     private readonly IUserRepository _userRepo;
     protected APIResponse _response;
-    public UserController(IUserRepository userRepo)
+    private ComputerAidedDispatchContext _fullDB;
+    public UserController(IUserRepository userRepo, ComputerAidedDispatchContext fullDB)
     {
         _userRepo = userRepo;
         _response = new();
+        _fullDB = fullDB;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        var users = _fullDB.Users.ToList();
+        _response.Result = users;
+        _response.IsSuccess = true;
+        _response.StatusCode = System.Net.HttpStatusCode.OK;
+
+        return Ok(_response);
     }
 
     [HttpPost("login")]

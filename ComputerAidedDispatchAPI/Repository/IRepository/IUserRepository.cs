@@ -7,5 +7,8 @@ namespace ComputerAidedDispatchAPI.Repository.IRepository
         bool IsUniqueUser(string username);
         Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO);
         Task<UserDTO?> Register(RegistrationRequestDTO registrationRequestDTO);
+        public bool DoesDefaultAIUserExist();
+        public bool DoesDefaultTestUserExist();
+
     }
 }

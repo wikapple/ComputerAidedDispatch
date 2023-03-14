@@ -25,6 +25,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 
 // Add Dependency Injection:
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUnitRepository, UnitRepository>();
+builder.Services.AddScoped<IDispatcherRepository, DispatcherRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 

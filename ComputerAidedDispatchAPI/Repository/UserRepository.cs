@@ -131,5 +131,16 @@ namespace ComputerAidedDispatchAPI.Repository
 
             return null;
         }
+
+        public bool DoesDefaultAIUserExist()
+        {
+            return (_db.ApplicationUsers.Any(au => au.UserName == "DispatcherAI"));
+               
+        }
+
+        public bool DoesDefaultTestUserExist()
+        {
+            return (_db.ApplicationUsers.Any(au => au.UserName == "DispatcherAI"));
+        }
     }
 }

@@ -17,7 +17,7 @@ public class Unit
     public string UnitNumber { get; set; }
 
     [ForeignKey("ApplicationUser")]
-    public int UserId { get; set; }
+    public string UserId { get; set; }
     public ApplicationUser UserInfo { get; set; }
 
     [ForeignKey("CallForService")]

@@ -52,6 +52,7 @@ public class ComputerAidedDispatchContext: IdentityDbContext<ApplicationUser>
             .WithOne(d => d.UserInfo)
             .HasForeignKey<Dispatcher>(d => d.UserId);
 
+        
         /*
         modelBuilder.Entity<Unit>()
             .HasData(
