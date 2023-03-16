@@ -30,6 +30,7 @@ public class CallForService
     [MaxLength(50)]
     public String Status { get; set; }
     public string? Caller_info { get; set; }
+    public string Description { get; set; }
     public List<CallComment>? CallComments { get; set; }
     public List<Unit>? Units { get; set; }
 

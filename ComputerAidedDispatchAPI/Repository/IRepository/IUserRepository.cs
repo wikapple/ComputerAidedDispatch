@@ -1,4 +1,6 @@
-﻿using ComputerAidedDispatchAPI.Models.DTOs;
+﻿using ComputerAidedDispatchAPI.Models;
+using ComputerAidedDispatchAPI.Models.DTOs;
+using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
 
 namespace ComputerAidedDispatchAPI.Repository.IRepository
 {
@@ -7,8 +9,8 @@ namespace ComputerAidedDispatchAPI.Repository.IRepository
         bool IsUniqueUser(string username);
         Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO);
         Task<UserDTO?> Register(RegistrationRequestDTO registrationRequestDTO);
-        public bool DoesDefaultAIUserExist();
+        public bool DoesDefaultSystemUserExist();
         public bool DoesDefaultTestUserExist();
-
+        ApplicationUser? GetUser(string userId);
     }
 }

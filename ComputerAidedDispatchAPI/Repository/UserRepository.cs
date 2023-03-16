@@ -19,7 +19,7 @@ namespace ComputerAidedDispatchAPI.Repository
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
-        private string secretKey;
+        private readonly string secretKey;
 
 
         public UserRepository(IConfiguration configuration, ComputerAidedDispatchContext db, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
@@ -28,7 +28,7 @@ namespace ComputerAidedDispatchAPI.Repository
             _userManager = userManager;
             _roleManager = roleManager;
             _mapper = mapper;
-            this.secretKey = configuration.GetValue<string>("ApiSettings:Secret");
+            this.secretKey = configuration.GetValue<string>("ApiSettings:Secret")!;
         }
 
         public bool IsUniqueUser(string username)
@@ -132,15 +132,20 @@ namespace ComputerAidedDispatchAPI.Repository
             return null;
         }
 
-        public bool DoesDefaultAIUserExist()
+        public bool DoesDefaultSystemUserExist()
         {
-            return (_db.ApplicationUsers.Any(au => au.UserName == "DispatcherAI"));
+            return (_db.ApplicationUsers.Any(au => au.UserName == "SystemTestUser"));
                
         }
 
         public bool DoesDefaultTestUserExist()
         {
-            return (_db.ApplicationUsers.Any(au => au.UserName == "DispatcherAI"));
+            return (_db.ApplicationUsers.Any(au => au.UserName == "TestUser"));
+        }
+
+        public ApplicationUser? GetUser(string userId)
+        {
+            return _db.ApplicationUsers.FirstOrDefault(au => au.Id == userId);
         }
     }
 }

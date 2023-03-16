@@ -2,6 +2,7 @@
 using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Models.DTOs;
 using ComputerAidedDispatchAPI.Repository.IRepository;
+using ComputerAidedDispatchAPI.Service.IService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -12,12 +13,12 @@ namespace ComputerAidedDispatchAPI.Controllers;
 [ApiController]
 public class UserController : Controller
 {
-    private readonly IUserRepository _userRepo;
+    private readonly IUserService _userService;
     protected APIResponse _response;
     private ComputerAidedDispatchContext _fullDB;
-    public UserController(IUserRepository userRepo, ComputerAidedDispatchContext fullDB)
+    public UserController(IUserService userService, ComputerAidedDispatchContext fullDB)
     {
-        _userRepo = userRepo;
+        _userService = userService;
         _response = new();
         _fullDB = fullDB;
     }
@@ -36,7 +37,7 @@ public class UserController : Controller
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
     {
-        var loginResponse = await _userRepo.Login(model);
+        var loginResponse = await _userService.Login(model);
         if (loginResponse.user == null || string.IsNullOrEmpty(loginResponse.Token))
         {
             _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
@@ -53,7 +54,7 @@ public class UserController : Controller
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegistrationRequestDTO model)
     {
-        bool isUserNameUnique = _userRepo.IsUniqueUser(model.UserName);
+        bool isUserNameUnique = _userService.IsUniqueUser(model.UserName);
         if (!isUserNameUnique)
         {
             _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
@@ -62,7 +63,7 @@ public class UserController : Controller
             return BadRequest(_response);
         }
         
-        var user = await _userRepo.Register(model);
+        var user = await _userService.Register(model);
         if (user == null)
         {
             _response.StatusCode = System.Net.HttpStatusCode.BadRequest;

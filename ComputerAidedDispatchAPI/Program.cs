@@ -3,6 +3,8 @@ using ComputerAidedDispatchAPI.Data;
 using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Repository;
 using ComputerAidedDispatchAPI.Repository.IRepository;
+using ComputerAidedDispatchAPI.Service;
+using ComputerAidedDispatchAPI.Service.IService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitRepository, UnitRepository>();
 builder.Services.AddScoped<IDispatcherRepository, DispatcherRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 

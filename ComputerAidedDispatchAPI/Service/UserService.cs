@@ -1,4 +1,5 @@
-﻿using ComputerAidedDispatchAPI.Models.DTOs;
+﻿using ComputerAidedDispatchAPI.Models;
+using ComputerAidedDispatchAPI.Models.DTOs;
 using ComputerAidedDispatchAPI.Repository.IRepository;
 using ComputerAidedDispatchAPI.Service.IService;
 using System.Runtime.CompilerServices;
@@ -9,18 +10,20 @@ public class UserService : IUserService
 {
 
 	private readonly IUserRepository _userRepository;
-	private readonly IUnitRepository _unitRepository;
-	private readonly IDispatcherRepository _dispatcherRepository;
-	public UserService(IUserRepository userRepo, IUnitRepository unitRepo, IDispatcherRepository dispatcherRepo)
+	
+	public UserService(IUserRepository userRepo)
 	{
 		_userRepository= userRepo;
-		_unitRepository= unitRepo;
-		_dispatcherRepository= dispatcherRepo;
-		AddDefaultUsersIfNotExists();
+		CreateDefaultUsersIfNotExists();
 
 	}
 
-	public bool IsUniqueUser(string username)
+    public bool DoesUserIdExist(string userId)
+    {
+		return _userRepository.GetUser(userId) != null;
+    }
+
+    public bool IsUniqueUser(string username)
 	{
 		return _userRepository.IsUniqueUser(username);
 	}
@@ -35,17 +38,21 @@ public class UserService : IUserService
 		return await _userRepository.Register(registrationRequestDTO);
 	}
 
-	private async Task CreateDefaultUsersIfNotExists()
+	private void CreateDefaultUsersIfNotExists()
 	{
-		if (!_userRepository.DoesDefaultAIUserExist())
+		if (!_userRepository.DoesDefaultSystemUserExist())
 		{
+			RegistrationRequestDTO defaultSystemUser = new()
+			{
+				UserName = "SystemTestUser",
+				Name = "SystemUser",
+				Password = "HELLOworld!!11",
+				Roles = new List<String>{"system", "admin"}
+			};
 
+			_userRepository.Register(defaultSystemUser);
 		}
 
-		if (!_userRepository.DoesDefaultTestUserExist())
-		{
-
-		}
 	}
 
 }
