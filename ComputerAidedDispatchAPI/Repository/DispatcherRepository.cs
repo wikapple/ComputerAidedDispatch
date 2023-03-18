@@ -4,7 +4,7 @@ using ComputerAidedDispatchAPI.Repository.IRepository;
 
 namespace ComputerAidedDispatchAPI.Repository
 {
-    public class DispatcherRepository : Repository<Dispatcher>, IDispatcherRepository
+    public class DispatcherRepository : Repository<Dispatcher?>, IDispatcherRepository
     {
         private readonly ComputerAidedDispatchContext _db;
 

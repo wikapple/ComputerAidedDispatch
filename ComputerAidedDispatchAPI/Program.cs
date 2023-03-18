@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,8 +29,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
 // Add Dependency Injection:
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitRepository, UnitRepository>();
+builder.Services.AddScoped<ICallForServiceRepository, CallForServiceRepository>();
 builder.Services.AddScoped<IDispatcherRepository, DispatcherRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddScoped<ICallForServiceService, CallForServiceService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 

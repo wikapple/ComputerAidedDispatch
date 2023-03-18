@@ -49,6 +49,7 @@ namespace ComputerAidedDispatchAPI.Repository
                     query = query.Include(includeProp);
                 }
             }
+            
             return await query.FirstOrDefaultAsync();
         }
 

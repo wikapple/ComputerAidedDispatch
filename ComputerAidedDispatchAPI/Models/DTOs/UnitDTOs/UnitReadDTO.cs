@@ -2,10 +2,14 @@
 {
     public class UnitReadDTO
     {
-        public String UnitNumber { get; set; }
+        public string UnitNumber { get; set; }
 
         public int? CallNumber { get; set; }
         public string Status { get; set; }
 
+        public override string ToString()
+        {
+            return $"Unit Number: {UnitNumber}, Call Number: {CallNumber}, Status: {Status}";
+        }
     }
 }

@@ -4,7 +4,7 @@ using ComputerAidedDispatchAPI.Repository.IRepository;
 
 namespace ComputerAidedDispatchAPI.Repository
 {
-    public class CallCommentRepository : Repository<CallComment>, ICallCommentRepository
+    public class CallCommentRepository : Repository<CallComment?>, ICallCommentRepository
     {
         private readonly ComputerAidedDispatchContext _db;
 

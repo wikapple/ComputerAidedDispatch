@@ -10,7 +10,7 @@ namespace ComputerAidedDispatchAPI.Repository.IRepository
         public Task<List<Unit>> GetAllAsync(Expression<Func<Unit, bool>>? filter = null, string? includeProperties = null);
 
         public Task RemoveAsync(Unit unit);
-
+        public Unit? GetDetails(string unitNumber);
         public Task<Unit> UpdateAsync(Unit unit);
     }
 }

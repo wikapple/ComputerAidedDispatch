@@ -4,7 +4,7 @@ using ComputerAidedDispatchAPI.Repository.IRepository;
 
 namespace ComputerAidedDispatchAPI.Repository
 {
-    public class CallForServiceRepository : Repository<CallForService>, ICallForServiceRepository
+    public class CallForServiceRepository : Repository<CallForService?>, ICallForServiceRepository
     {
 
         private readonly ComputerAidedDispatchContext _db;
