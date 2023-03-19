@@ -33,6 +33,7 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetUnits([FromQuery(Name = "callNumber")]int? callNumber, [FromQuery(Name = "status")]string? status)
         {
+          
             List<UnitReadDTO> unitList;
             if(callNumber == null && status == null)
             {
@@ -56,8 +57,19 @@ namespace ComputerAidedDispatchAPI.Controllers
             return Ok(_response);
         }
 
-        
 
+        [HttpGet("Details")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetAllUnitDetails()
+        {
+            var unitDetailsList = await _unitService.GetAllDetailsAsync();
+            _response.IsSuccess = true;
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
+            _response.Result = unitDetailsList;
+            return Ok(_response);
+        }
 
         // GET: api/Units/5
         [HttpGet("{unitNumber}")]
@@ -66,29 +78,10 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUnit(string unitNumber, [FromQuery(Name = "getDetails")]bool getDetails = false)
+        public async Task<IActionResult> GetUnit(string unitNumber)
         {
 
-            if (getDetails)
-            {
-                var unit = _unitService.GetDetails(unitNumber);
-                if (unit == null)
-                {
-                    _response.IsSuccess = false;
-                    _response.ErrorMessages.Add($"Unit with an Id of {unitNumber} not found");
-                    _response.StatusCode = System.Net.HttpStatusCode.NotFound;
-                    return NotFound(_response);
-                }
-                else
-                {
-                    _response.IsSuccess = true;
-                    _response.StatusCode = System.Net.HttpStatusCode.OK;
-                    _response.Result = unit;
-                    return Ok(_response);
-                }
-            }
-            else
-            {
+         
                 var unit = _unitService.GetByUnitNumberAsync(unitNumber).Result;
                 if (unit == null)
                 {
@@ -105,10 +98,37 @@ namespace ComputerAidedDispatchAPI.Controllers
                     return Ok(_response);
                 }
 
+      
+        }
 
+        // GET: api/Units/5
+        [HttpGet("Details/{unitNumber}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetUnitDetails(string unitNumber)
+        {
+
+
+            var unit = _unitService.GetDetails(unitNumber);
+            if (unit == null)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add($"Unit with an Id of {unitNumber} not found");
+                _response.StatusCode = System.Net.HttpStatusCode.NotFound;
+                return NotFound(_response);
+            }
+            else
+            {
+                _response.IsSuccess = true;
+                _response.StatusCode = System.Net.HttpStatusCode.OK;
+                _response.Result = unit;
+                return Ok(_response);
             }
 
-      
+
         }
 
         // PUT: api/Units/5

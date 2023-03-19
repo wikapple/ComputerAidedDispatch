@@ -8,7 +8,6 @@ public class Unit
 
     public Unit()
     {
-        timeStatusAssigned = DateTime.Now;
      
     }
 
@@ -27,26 +26,12 @@ public class Unit
     
     private string status;
     [Required]
-    public string Status
-    {
-        get { return status; }
-        set {
-            timeStatusAssigned = DateTime.Now;
-                status = value;
-            }
-    }
+    public string Status { get; set; }
 
-    private DateTime timeStatusAssigned;
-
-    public DateTime TimeStatusAssigned
-    {
-        get { return timeStatusAssigned; }
-
-    }
-
+    public DateTime TimeStatusAssigned { get; set; }
     public TimeSpan StatusDuration
     {
-        get { return DateTime.Now.Subtract(timeStatusAssigned); }
+        get { return DateTime.Now.Subtract(TimeStatusAssigned); }
 
     }
 

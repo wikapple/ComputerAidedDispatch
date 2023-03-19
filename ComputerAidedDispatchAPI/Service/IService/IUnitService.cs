@@ -8,6 +8,7 @@ namespace ComputerAidedDispatchAPI.Service.IService
         public Task<UnitReadDTO?> CreateUnitAndUserAsync(UnitAndUserCreateDTO createDTO);
         public Task<UnitReadDTO?> GetByUnitNumberAsync(string unitNumber);
         public UnitDetailsReadDTO? GetDetails(string unitNumber);
+        public Task<List<UnitDetailsReadDTO>> GetAllDetailsAsync();
         public Task<List<UnitReadDTO>> GetAllAsync();
         public Task<List<UnitReadDTO>> FilterByCallNumberAsync(int callNumber);
         public Task<List<UnitReadDTO>> FilterByStatusAsync(string status);

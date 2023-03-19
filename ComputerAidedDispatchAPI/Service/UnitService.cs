@@ -35,7 +35,8 @@ public class UnitService : IUnitService
 			{
 				UnitNumber = createDTO.UnitNumber,
 				UserId = createDTO.UserId,
-				Status = "Unavailable"
+				Status = "Unavailable",
+				TimeStatusAssigned = DateTime.Now
 			};
 
 			await _unitRepository.CreateAsync(newUnit);
@@ -60,7 +61,8 @@ public class UnitService : IUnitService
 				{
 					UnitNumber = createDTO.UnitNumber,
 					UserId = userCreationResponse.Id,
-					Status = "Unavailable"
+					Status = "Unavailable",
+					TimeStatusAssigned = DateTime.Now
 				};
 
 				await _unitRepository.CreateAsync(unit);
@@ -114,18 +116,23 @@ public class UnitService : IUnitService
 	{
 		List<Unit> units = await _unitRepository.GetAllAsync();
 
-		var unitDTOs = units.Select(unit => _mapper.Map<UnitReadDTO>(unit)).ToList();
+		var unitDTOs = units.Select(unit => _mapper.Map<UnitReadDTO>(unit)).OrderBy(x => x.Status).ThenBy(x => x.UnitNumber).ToList();
 
-		foreach (var unitDTO in unitDTOs)
-		{
-			Console.WriteLine(unitDTO);
-		}
 
 		return unitDTOs;
 	}
 
-	// Filter By Call Number
-	public async Task<List<UnitReadDTO>> FilterByCallNumberAsync(int callNumber)
+    public async Task<List<UnitDetailsReadDTO>> GetAllDetailsAsync()
+    {
+        List<Unit> units = await _unitRepository.GetAllAsync();
+
+        var unitDTOs = units.Select(unit => _mapper.Map<UnitDetailsReadDTO>(unit)).OrderBy(x => x.Status).ThenBy(x => x.StatusDuration).ToList();
+
+        return unitDTOs;
+    }
+
+    // Filter By Call Number
+    public async Task<List<UnitReadDTO>> FilterByCallNumberAsync(int callNumber)
 	{
 		List<Unit> units = await _unitRepository.GetAllAsync(x => x.CallNumber == callNumber);
 
@@ -175,6 +182,7 @@ public class UnitService : IUnitService
 		if(unit != null)
 		{
 			unit.Status = status;
+
 			await _unitRepository.UpdateAsync(unit);
 			return _mapper.Map<UnitReadDTO>(unit);
 		}

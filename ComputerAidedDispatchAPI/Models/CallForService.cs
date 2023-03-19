@@ -9,7 +9,7 @@ public class CallForService
     public CallForService()
     {
         DateTimeCreated= DateTime.Now;
-        LastUpdated= DateTime.Now;
+        TimeStatusAssigned= DateTime.Now;
     }
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,7 +17,7 @@ public class CallForService
     [Required]
     public DateTime DateTimeCreated { get; set; }
 
-    public DateTime LastUpdated { get; set; }
+    public DateTime TimeStatusAssigned { get; set; }
 
     [Required]
     [MaxLength(100)]
