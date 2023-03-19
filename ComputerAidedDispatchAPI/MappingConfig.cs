@@ -2,6 +2,7 @@
 using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Models.DTOs;
 using ComputerAidedDispatchAPI.Models.DTOs.CallForServiceDTOs;
+using ComputerAidedDispatchAPI.Models.DTOs.DispatcherDTOs;
 using ComputerAidedDispatchAPI.Models.DTOs.UnitDTOs;
 
 namespace ComputerAidedDispatchAPI
@@ -26,23 +27,20 @@ namespace ComputerAidedDispatchAPI
                         Status = src.CallForService.Status,
                         Description = src.CallForService.Description,
                         DateTimeCreated = src.CallForService.DateTimeCreated,
-                        Units = src.CallForService.Units.Select(unit => new UnitReadDTO()
-                        {
-                            UnitNumber = unit.UnitNumber,
-                            CallNumber = unit.CallNumber,
-                            Status = unit.Status
-                        }).ToList()
+                        NumberOfUnitsAssigned =
+                            (src.CallForService == null || src.CallForService.Units == null) ?
+                                 0 : src.CallForService.Units.Count()
                 }));
 
             CreateMap<CallForService, CallForServiceReadDTO>()
-                .ForMember(dto => dto.Units, act => act.MapFrom(src => src.Units.Select(unit => new UnitReadDTO()
-                {
-                    UnitNumber = unit.UnitNumber,
-                    CallNumber = unit.CallNumber,
-                    Status = unit.Status
-                }
-                ).ToList()
+                .ForMember(dto => dto.NumberOfUnitsAssigned, act => act
+                    .MapFrom(src => (src.Units == null) ? 0 : src.Units.Count()
                 ));
+
+            CreateMap<Dispatcher, DispatcherReadDTO>()
+                .ForMember(dto => dto.Name, act => act.MapFrom(disp => disp.UserInfo.Name));
+        
         }
+
     }
 }

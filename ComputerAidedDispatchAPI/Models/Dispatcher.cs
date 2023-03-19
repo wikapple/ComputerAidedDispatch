@@ -6,7 +6,8 @@ namespace ComputerAidedDispatchAPI.Models
     public class Dispatcher
     {
         [Key]
-        public string DispatchNumber { get; set; }
+        [MaxLength(10)]
+        public string DispatcherNumber { get; set; }
         [ForeignKey("ApplicationUser")]
         public string UserId { get; set; }
         public ApplicationUser UserInfo { get; set; }

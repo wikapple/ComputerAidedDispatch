@@ -19,6 +19,14 @@ public class CallForService
 
     public DateTime TimeStatusAssigned { get; set; }
 
+    public TimeSpan DurationSinceTimeAssigned 
+    {
+        get
+        {
+            return DateTime.Now.Subtract(TimeStatusAssigned);
+        }
+    }
+
     [Required]
     [MaxLength(100)]
     public string CallType { get; set; }

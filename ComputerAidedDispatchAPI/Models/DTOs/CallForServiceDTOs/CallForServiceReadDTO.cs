@@ -10,6 +10,6 @@ namespace ComputerAidedDispatchAPI.Models.DTOs.CallForServiceDTOs
         public string Status { get; set; }
         public string Description { get; set; }
         public DateTime DateTimeCreated { get; set; }
-        public List<UnitReadDTO> Units { get; set; }
+        public int NumberOfUnitsAssigned { get; set; }
     }
 }
