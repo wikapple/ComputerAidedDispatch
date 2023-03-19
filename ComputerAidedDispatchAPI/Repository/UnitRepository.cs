@@ -13,11 +13,12 @@ namespace ComputerAidedDispatchAPI.Repository
         public UnitRepository(ComputerAidedDispatchContext db) :base(db)
         {
             _db = db;
+            dbSet.Include(unit => unit.UserInfo);
         }
 
         public Unit? GetDetails(string unitNumber)
         {
-            return _db.Units.Include(a => a.UserInfo).FirstOrDefault(a => a.UnitNumber == unitNumber);
+            return _db.Units.Include(a => a.CallForService).FirstOrDefault(a => a.UnitNumber == unitNumber);
 
         }
         public async Task<List<Unit>> GetDetailsForAll(Expression<Func<Unit, bool>>? filter = null)
@@ -33,15 +34,18 @@ namespace ComputerAidedDispatchAPI.Repository
 
         public async Task<Unit> UpdateAsync(Unit entity)
         {
-            Unit unit = _db.Units.FirstOrDefault(x => x.UnitNumber == entity.UnitNumber);
+            Unit? unit = _db.Units.FirstOrDefault(x => x.UnitNumber == entity.UnitNumber);
 
-            if(unit.Status != entity.Status)
+            if (unit != null)
             {
-                entity.TimeStatusAssigned = DateTime.Now;
-            }
+                if (unit.Status != entity.Status)
+                {
+                    entity.TimeStatusAssigned = DateTime.Now;
+                }
 
-            _db.Units.Update(entity);
-            await _db.SaveChangesAsync();
+                _db.Units.Update(entity);
+                await _db.SaveChangesAsync();
+            }
             return entity;
         }
 

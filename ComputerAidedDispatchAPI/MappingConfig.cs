@@ -13,7 +13,8 @@ namespace ComputerAidedDispatchAPI
         {
             CreateMap<ApplicationUser, UserDTO>().ReverseMap();
             
-            CreateMap<Unit, UnitReadDTO>();
+            CreateMap<Unit, UnitReadDTO>()
+                .ForMember(dto => dto.Name, act => act.MapFrom(unit => unit.UserInfo));
 
             CreateMap<Unit, UnitDetailsReadDTO>()
                 .ForMember(dto => dto.Name, act => act.MapFrom(src => src.UserInfo.Name))

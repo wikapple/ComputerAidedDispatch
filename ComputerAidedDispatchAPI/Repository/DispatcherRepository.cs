@@ -13,6 +13,7 @@ public class DispatcherRepository : Repository<Dispatcher?>, IDispatcherReposito
     public DispatcherRepository(ComputerAidedDispatchContext db) : base(db)
     {
         _db = db;
+        dbSet.Include(dispatcher => dispatcher.UserInfo);
     }
 
     public async Task<Dispatcher> UpdateAsync(Dispatcher entity)

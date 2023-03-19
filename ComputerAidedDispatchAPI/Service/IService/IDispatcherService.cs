@@ -10,7 +10,5 @@ public interface IDispatcherService{
 
     public Task<DispatcherReadDTO> CreateDispatcherAndUser(DispatcherAndUserCrateDTO createDTO);
 
-    public Task<DispatcherReadDTO> UpdateAsync(string dispatchNumber);
-
     public Task DeleteAsync(string dispatchNumber);
 }
