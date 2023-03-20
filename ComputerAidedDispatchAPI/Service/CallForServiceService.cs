@@ -39,12 +39,12 @@ namespace ComputerAidedDispatchAPI.Service
         {
             if (status != null)
             {
-                var callList = await _callRepository.GetAllAsync(x => x.Status == status, includeProperties: "Units, CallComments");
+                var callList = await _callRepository.GetAllAsync(x => x.Status == status, includeProperties: "Units,CallComments");
                 return callList.Select(c => _mapper.Map<CallForServiceDetailsReadDTO>(c)).ToList();
             }
             else
             {
-                var callList = await _callRepository.GetAllAsync(includeProperties: "Units, CallComments");
+                var callList = await _callRepository.GetAllAsync(includeProperties: "Units,CallComments");
                 return callList.Select(c => _mapper.Map<CallForServiceDetailsReadDTO>(c)).ToList();
             }
         }
@@ -61,7 +61,7 @@ namespace ComputerAidedDispatchAPI.Service
         }
         public async Task<CallForServiceDetailsReadDTO?> GetDetailsAsync(int callId)
         {
-            var repositoryResponse = await _callRepository.GetAsync(x => x.Id == callId, includeProperties: "Units, CallComments");
+            var repositoryResponse = await _callRepository.GetAsync(x => x.Id == callId, includeProperties: "Units,CallComments");
 
             return repositoryResponse == null ?
                 null :

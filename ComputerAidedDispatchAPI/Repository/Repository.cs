@@ -16,7 +16,6 @@ namespace ComputerAidedDispatchAPI.Repository
         public Repository(ComputerAidedDispatchContext db)
         {
             _db = db;
-            // _db.VillaNumbers.Include(u => u.Villa).ToList();
             this.dbSet = _db.Set<T>();
         }
 
