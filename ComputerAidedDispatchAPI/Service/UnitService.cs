@@ -11,16 +11,14 @@ namespace ComputerAidedDispatchAPI.Service;
 public class UnitService : IUnitService
 {
     private readonly IUnitRepository _unitRepository;
-	private readonly IUserService _userService;
-	private readonly ICallForServiceService _callService;
 	private readonly IMapper _mapper;
+	private readonly ICadSharedService _sharedService;
 
-	public UnitService(IUnitRepository unitRepository, IUserService userService, ICallForServiceService callService, IMapper mapper)
+	public UnitService(IUnitRepository unitRepository, ICadSharedService sharedService, IMapper mapper)
 	{
 		_unitRepository = unitRepository;
-		_callService = callService;
-		_userService = userService;
 		_mapper = mapper;
+		_sharedService = sharedService;
 		CreateDefaultUsersIfNotExists();
 	}
 
@@ -30,7 +28,7 @@ public class UnitService : IUnitService
 		bool unitNumberIsUnique =
 			await _unitRepository.GetAsync(x => x.UnitNumber == createDTO.UnitNumber) == null;
 		
-		if (_userService.DoesUserIdExist(createDTO.UserId) && unitNumberIsUnique)
+		if (_sharedService.DoesUserIdExist(createDTO.UserId) && unitNumberIsUnique)
 		{
 			Unit newUnit = new()
 			{
@@ -56,7 +54,7 @@ public class UnitService : IUnitService
 
 		if(unitNumberIsUnique)
 		{
-			var userCreationResponse = await _userService.Register(createDTO.RegistrationDTO);
+			var userCreationResponse = await _sharedService.Register(createDTO.RegistrationDTO);
 
 			if (userCreationResponse != null)
 			{
@@ -81,17 +79,7 @@ public class UnitService : IUnitService
 	// Read One
 	public async Task<UnitReadDTO?> GetByUnitNumberAsync(string unitNumber)
 	{
-		var queriedUnit = 
-            await _unitRepository.GetAsync((x) => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
-
-		if (queriedUnit == null)
-		{
-			return null;
-		}
-		else
-		{
-			return _mapper.Map<UnitReadDTO>(queriedUnit);
-		}
+		return await _sharedService.GetByUnitNumberAsync(unitNumber);
 	}
 
     public async Task<UnitDetailsReadDTO?> GetDetailsByUnitNumberAsync(string unitNumber)
@@ -167,37 +155,13 @@ public class UnitService : IUnitService
 	// Update Status
 	public async Task<UnitReadDTO?> UpdateStatusAsync(string unitNumber, string status)
 	{
-        var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
-
-		if(unit != null)
-		{
-			unit.Status = status;
-
-			await _unitRepository.UpdateAsync(unit);
-			return _mapper.Map<UnitReadDTO>(unit);
-		}
-		else
-		{
-			return null;
-		}
+       return await _sharedService.UpdateStatusAsync(unitNumber, status);
     }
 
 	// Update Call
 	public async Task<UnitReadDTO?> AssignCallAsync(string unitNumber, int? callNumber)
 	{
-        var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
-
-		if ( unit != null &&
-			( callNumber == null || await _callService.GetAsync((int)callNumber!) != null) )
-		{
-			unit.CallNumber = callNumber;
-			await _unitRepository.UpdateAsync(unit);
-			return _mapper.Map<UnitReadDTO>(unit);
-		}
-		else
-		{
-			return null;
-		}
+		return await _sharedService.AssignCallAsync(unitNumber, callNumber);
     }
 
 

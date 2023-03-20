@@ -37,6 +37,7 @@ builder.Services.AddScoped<IUnitService, UnitService>();
 builder.Services.AddScoped<IDispatcherService, DispatcherService>();
 builder.Services.AddScoped<ICallForServiceService, CallForServiceService>();
 builder.Services.AddScoped<ICallCommentService, CallCommentService>();
+builder.Services.AddScoped<ICadSharedService, CadSharedService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 

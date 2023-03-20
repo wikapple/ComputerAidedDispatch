@@ -12,13 +12,12 @@ namespace ComputerAidedDispatchAPI.Service
     {
 
         private readonly ICallForServiceRepository _callRepository;
-        private readonly IUnitService _unitService;
         private readonly IMapper _mapper;
-
-        public CallForServiceService(ICallForServiceRepository callRepository, IUnitService unitService, IMapper mapper)
+        private readonly ICadSharedService _sharedService;
+        public CallForServiceService(ICallForServiceRepository callRepository, IMapper mapper, ICadSharedService sharedService)
         {
             _callRepository = callRepository;
-            _unitService = unitService;
+            _sharedService = sharedService;
             _mapper = mapper;
         }
 
@@ -141,8 +140,8 @@ namespace ComputerAidedDispatchAPI.Service
         {
             foreach (var unitId in unitIds)
             {
-                if (_unitService.GetByUnitNumberAsync(unitId) != null)
-                    await _unitService.AssignCallAsync(unitId, callId);
+                if (_sharedService.GetByUnitNumberAsync(unitId) != null)
+                    await _sharedService.AssignCallAsync(unitId, callId);
             }
 
           
@@ -152,11 +151,11 @@ namespace ComputerAidedDispatchAPI.Service
         {
             foreach (var unitId in unitIds)
             {
-                var unit = await _unitService.GetByUnitNumberAsync(unitId);
+                var unit = await _sharedService.GetByUnitNumberAsync(unitId);
                 if (unit != null && unit.CallNumber == callId)
                 {
-                    await _unitService.AssignCallAsync(unitId, null);
-                    await _unitService.UpdateStatusAsync(unitId, "Available");
+                    await _sharedService.AssignCallAsync(unitId, null);
+                    await _sharedService.UpdateStatusAsync(unitId, "Available");
                 }
             }
         }

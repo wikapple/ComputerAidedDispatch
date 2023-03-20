@@ -9,14 +9,15 @@ namespace ComputerAidedDispatchAPI.Service;
 public class DispatcherService : IDispatcherService
 {
     
-    IDispatcherRepository _dispatcherRepository;
-    IMapper _mapper;
-    IUserService _userService;
-    public DispatcherService(IDispatcherRepository dispatcherRepository, IMapper mapper, IUserService userService)
+    private readonly IDispatcherRepository _dispatcherRepository;
+    private readonly IMapper _mapper;
+    private readonly ICadSharedService _sharedService;
+    public DispatcherService(IDispatcherRepository dispatcherRepository, IMapper mapper, ICadSharedService sharedService)
     {
         _dispatcherRepository = dispatcherRepository;
         _mapper = mapper;
-        _userService = userService;
+        _sharedService = sharedService;
+        
     }
     public async Task<List<DispatcherReadDTO>> GetAllDispatchersAsync()
     {
@@ -35,7 +36,7 @@ public class DispatcherService : IDispatcherService
 
     public async Task<DispatcherReadDTO?> CreateAsync(DispatcherCreateDTO createDTO)
     {
-        if (_userService.DoesUserIdExist(createDTO.UserId)) {
+        if (_sharedService.DoesUserIdExist(createDTO.UserId)) {
             Dispatcher newDispatcher = new()
             {
                 DispatcherNumber = createDTO.DispatcherNumber,
@@ -57,7 +58,7 @@ public class DispatcherService : IDispatcherService
 
         if(dispatcherNumberIsUnique)
         {
-            var userCreationResponse = await _userService.Register(createDTO.RegistrationDTO);
+            var userCreationResponse = await _sharedService.Register(createDTO.RegistrationDTO);
 
             if(userCreationResponse != null)
             {

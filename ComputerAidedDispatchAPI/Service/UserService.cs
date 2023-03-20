@@ -3,6 +3,7 @@ using ComputerAidedDispatchAPI.Models.DTOs;
 using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
 using ComputerAidedDispatchAPI.Repository.IRepository;
 using ComputerAidedDispatchAPI.Service.IService;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Runtime.CompilerServices;
 
 namespace ComputerAidedDispatchAPI.Service;
@@ -11,17 +12,19 @@ public class UserService : IUserService
 {
 
 	private readonly IUserRepository _userRepository;
-	
-	public UserService(IUserRepository userRepo)
+	private readonly ICadSharedService _sharedService;
+
+	public UserService(IUserRepository userRepo, ICadSharedService sharedService)
 	{
-		_userRepository= userRepo;
+		_sharedService = sharedService;
+		_userRepository = userRepo;
 		CreateDefaultUsersIfNotExists();
 
 	}
 
     public bool DoesUserIdExist(string userId)
     {
-		return _userRepository.GetUser(userId) != null;
+		return _sharedService.DoesUserIdExist(userId);
     }
 
     public bool IsUniqueUser(string username)
@@ -36,7 +39,7 @@ public class UserService : IUserService
 
 	public async Task<UserDTO?> Register(RegistrationRequestDTO registrationRequestDTO)
 	{
-		return await _userRepository.Register(registrationRequestDTO);
+		return await _sharedService.Register(registrationRequestDTO);
 	}
 
 	private void CreateDefaultUsersIfNotExists()

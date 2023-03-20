@@ -10,7 +10,6 @@ namespace ComputerAidedDispatchAPI.Service.IService
         public Task<List<CallForServiceReadDTO>> GetAllAsync(string? status = null);
         public Task<List<CallForServiceDetailsReadDTO>> GetAllDetailsAsync(string? status = null);
         public Task<CallForServiceReadDTO?> CreateAsync(CallForServiceCreateDTO createDTO);
-
         public Task<CallForServiceReadDTO?> UpdateAsync(CallForServiceUpdateDTO updateDTO);
         public Task DeleteAsync(int callId);
         public Task<CallForServiceReadDTO?> UpdateStatus(int callId, string status);
