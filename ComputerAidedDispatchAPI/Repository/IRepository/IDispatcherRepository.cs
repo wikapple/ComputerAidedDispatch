@@ -6,7 +6,7 @@ namespace ComputerAidedDispatchAPI.Repository.IRepository
     public interface IDispatcherRepository
     {
 
-        public Task CreateAsync(Dispatcher dispatcher);
+        public Task<Dispatcher?> CreateAsync(Dispatcher dispatcher);
         public Task<Dispatcher> GetAsync(Expression<Func<Dispatcher, bool>> filter = null, bool tracked = true, string? includeProperties = null);
         public Task<List<Dispatcher>> GetAllAsync(Expression<Func<Dispatcher, bool>>? filter = null, string? includeProperties = null);
 

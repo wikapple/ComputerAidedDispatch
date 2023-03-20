@@ -26,7 +26,7 @@ public class DispatcherService : IDispatcherService
 
 
     }
-    public async Task<DispatcherReadDTO> GetDetailsByDispatcherNumberAsync(string dispatchNumber)
+    public async Task<DispatcherReadDTO> GetByDispatcherNumberAsync(string dispatchNumber)
     {
         var dispatcher = await _dispatcherRepository.GetAsync(d => d.DispatcherNumber == dispatchNumber);
 
@@ -42,7 +42,7 @@ public class DispatcherService : IDispatcherService
                 UserId = createDTO.UserId
             };
 
-            var newlyCreatedDispatcher = await _dispatcherRepository.GetAsync(d => d.DispatcherNumber == newDispatcher.DispatcherNumber);
+            var newlyCreatedDispatcher = await _dispatcherRepository.GetAsync(d => d.DispatcherNumber == newDispatcher.DispatcherNumber, includeProperties: "UserInfo");
 
             return _mapper.Map<DispatcherReadDTO>(newlyCreatedDispatcher);
 
@@ -50,7 +50,7 @@ public class DispatcherService : IDispatcherService
         return null;
     }
 
-    public async Task<DispatcherReadDTO?> CreateDispatcherAndUser(DispatcherAndUserCrateDTO createDTO)
+    public async Task<DispatcherReadDTO?> CreateDispatcherAndUser(DispatcherAndUserCreateDTO createDTO)
     {
         bool dispatcherNumberIsUnique = 
              await _dispatcherRepository.GetAsync(d => d.DispatcherNumber == createDTO.DispatcherNumber) == null;
@@ -69,7 +69,9 @@ public class DispatcherService : IDispatcherService
 
                 await _dispatcherRepository.CreateAsync(dispatcher);
 
-                return _mapper.Map<DispatcherReadDTO>(dispatcher);
+                var newlyCreatedDispatcher = await _dispatcherRepository.GetAsync(d => d.DispatcherNumber == dispatcher.DispatcherNumber, includeProperties: "UserInfo");
+
+                return _mapper.Map<DispatcherReadDTO>(newlyCreatedDispatcher);
             }
         }
 

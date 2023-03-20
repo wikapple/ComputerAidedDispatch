@@ -6,11 +6,6 @@ namespace ComputerAidedDispatchAPI.Models;
 public class CallForService
 {
 
-    public CallForService()
-    {
-        DateTimeCreated= DateTime.Now;
-        TimeStatusAssigned= DateTime.Now;
-    }
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }

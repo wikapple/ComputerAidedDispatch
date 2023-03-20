@@ -38,7 +38,7 @@ public class UserController : Controller
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
     {
         var loginResponse = await _userService.Login(model);
-        if (loginResponse.user == null || string.IsNullOrEmpty(loginResponse.Token))
+        if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
         {
             _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
             _response.IsSuccess = false;

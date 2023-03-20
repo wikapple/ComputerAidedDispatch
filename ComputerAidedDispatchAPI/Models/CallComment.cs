@@ -5,19 +5,16 @@ namespace ComputerAidedDispatchAPI.Models;
 
 public class CallComment
 {
-
-    public CallComment()
-    {
-        DateTimeEntered= DateTime.Now;
-    }
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     [Required]
     [MaxLength(200)]
     public string Comment { get; set; }
 
     [Required]
-    public DateTime DateTimeEntered { get; set; }
+    public DateTime TimeCreated { get; set; }
+
     [Required]
     [ForeignKey("CallForService")]
     public int CallId { get; set; }
@@ -25,6 +22,5 @@ public class CallComment
 
     [ForeignKey("ApplicationUser")]
     public string userId { get; set; }
-    [Required]
-    public ApplicationUser User { get; set; }
+    public ApplicationUser ApplicationUser { get; set; }
 }

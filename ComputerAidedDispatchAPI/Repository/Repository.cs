@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Linq;
 using ComputerAidedDispatchAPI.Data;
 using ComputerAidedDispatchAPI.Repository.IRepository;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ComputerAidedDispatchAPI.Repository
 {
@@ -19,13 +20,13 @@ namespace ComputerAidedDispatchAPI.Repository
             this.dbSet = _db.Set<T>();
         }
 
-        public async Task CreateAsync(T entity)
+        public async Task<T> CreateAsync(T entity)
         {
             await dbSet.AddAsync(entity);
 
             await SaveAsync();
 
-
+            return entity;
         }
 
         public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true, string? includeProperties = null)

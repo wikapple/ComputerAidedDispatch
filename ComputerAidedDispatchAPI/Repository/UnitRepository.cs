@@ -16,22 +16,6 @@ namespace ComputerAidedDispatchAPI.Repository
             dbSet.Include(unit => unit.UserInfo);
         }
 
-        public Unit? GetDetails(string unitNumber)
-        {
-            return _db.Units.Include(a => a.CallForService).FirstOrDefault(a => a.UnitNumber == unitNumber);
-
-        }
-        public async Task<List<Unit>> GetDetailsForAll(Expression<Func<Unit, bool>>? filter = null)
-        {
-            IQueryable<Unit> query = dbSet.Include(x => x.CallForService)!;
-            if(filter != null)
-            {
-                query = query.Where(filter);
-            }
-
-            return await query.ToListAsync();
-        }
-
         public async Task<Unit> UpdateAsync(Unit entity)
         {
             Unit? unit = _db.Units.FirstOrDefault(x => x.UnitNumber == entity.UnitNumber);

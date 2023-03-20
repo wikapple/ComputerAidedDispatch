@@ -2,6 +2,7 @@
 using ComputerAidedDispatchAPI.Data;
 using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Models.DTOs;
+using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
 using ComputerAidedDispatchAPI.Repository.IRepository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -56,7 +57,7 @@ namespace ComputerAidedDispatchAPI.Repository
                 return new LoginResponseDTO()
                 {
                     Token = "",
-                    user = null
+                    User = null
                 };
             }
 
@@ -79,7 +80,7 @@ namespace ComputerAidedDispatchAPI.Repository
             LoginResponseDTO loginResponseDTO = new()
             {
                 Token = tokenHandler.WriteToken(token),
-                user = _mapper.Map<UserDTO>(user),
+                User = _mapper.Map<UserDTO>(user),
             };
             return loginResponseDTO;
         }

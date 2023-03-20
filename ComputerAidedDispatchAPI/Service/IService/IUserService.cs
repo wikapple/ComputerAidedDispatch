@@ -1,4 +1,5 @@
 ﻿using ComputerAidedDispatchAPI.Models.DTOs;
+using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
 
 namespace ComputerAidedDispatchAPI.Service.IService;
 

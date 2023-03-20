@@ -39,7 +39,7 @@ public class ComputerAidedDispatchContext: IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<ApplicationUser>()
              .HasMany(x => x.CallComments)
-             .WithOne(cc => cc.User)
+             .WithOne(cc => cc.ApplicationUser)
              .HasForeignKey(cc => cc.userId);
 
         modelBuilder.Entity<Unit>()
@@ -47,12 +47,12 @@ public class ComputerAidedDispatchContext: IdentityDbContext<ApplicationUser>
             .WithOne(ui => ui.ThisUnit)
             .HasForeignKey<Unit>(u => u.UserId);
 
-        modelBuilder.Entity<ApplicationUser>()
-            .HasOne(au => au.ThisDispatcher)
-            .WithOne(d => d.UserInfo)
+        modelBuilder.Entity<Dispatcher>()
+            .HasOne(d => d.UserInfo)
+            .WithOne(ui => ui.ThisDispatcher)
             .HasForeignKey<Dispatcher>(d => d.UserId);
 
-        
+
         /*
         modelBuilder.Entity<Unit>()
             .HasData(
@@ -82,6 +82,6 @@ public class ComputerAidedDispatchContext: IdentityDbContext<ApplicationUser>
                 }
             ) ;
         */
-        
-	}
+
+    }
 }

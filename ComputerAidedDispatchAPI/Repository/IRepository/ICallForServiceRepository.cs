@@ -7,7 +7,7 @@ namespace ComputerAidedDispatchAPI.Repository.IRepository
     {
         Task<CallForService> UpdateAsync(CallForService callForService);
 
-        public Task CreateAsync(CallForService callForService);
+        public Task<CallForService?> CreateAsync(CallForService callForService);
         public Task<CallForService> GetAsync(Expression<Func<CallForService, bool>> filter = null, bool tracked = true, string? includeProperties = null);
         public Task<List<CallForService>> GetAllAsync(Expression<Func<CallForService, bool>>? filter = null, string? includeProperties = null);
 

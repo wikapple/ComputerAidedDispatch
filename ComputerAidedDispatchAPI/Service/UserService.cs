@@ -1,5 +1,6 @@
 ﻿using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Models.DTOs;
+using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
 using ComputerAidedDispatchAPI.Repository.IRepository;
 using ComputerAidedDispatchAPI.Service.IService;
 using System.Runtime.CompilerServices;

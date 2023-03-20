@@ -31,29 +31,22 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> GetUnits([FromQuery(Name = "callNumber")]int? callNumber, [FromQuery(Name = "status")]string? status)
+        public async Task<IActionResult> GetUnits([FromQuery(Name = "callNumber")]int? callNumber, [FromQuery(Name = "status")]string? status, [FromQuery(Name = "getDetails")] bool getDetails = false)
         {
-          
-            List<UnitReadDTO> unitList;
-            if(callNumber == null && status == null)
+
+            if (getDetails)
             {
-                unitList = await _unitService.GetAllAsync();
-            }
-            else if(callNumber != null)
-            {
-                unitList = await _unitService.FilterByCallNumberAsync((int)callNumber!);
-            }
-            else if(status != null)
-            {
-                unitList = await _unitService.FilterByStatusAsync(status);
+                List<UnitDetailsReadDTO> unitList = _unitService.GetAllDetailsAsync(callNumber, status).Result;
+                _response.Result = unitList;
             }
             else
             {
-                unitList = await _unitService.FilterByCallNumberAndStatusAsync((int)callNumber!, status);
+                List<UnitReadDTO> unitList = _unitService.GetAllAsync(callNumber, status).Result;
+                _response.Result = unitList;
             }
             _response.IsSuccess = true;
             _response.StatusCode = System.Net.HttpStatusCode.OK;
-            _response.Result = unitList;
+            
             return Ok(_response);
         }
 
@@ -78,12 +71,19 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUnit(string unitNumber)
+        public async Task<IActionResult> GetUnit(string unitNumber, [FromQuery] bool getDetails = false)
         {
 
-         
-                var unit = _unitService.GetByUnitNumberAsync(unitNumber).Result;
-                if (unit == null)
+
+            if (getDetails)
+            {
+                _response.Result = _unitService.GetDetailsByUnitNumberAsync(unitNumber).Result;
+            }
+            else
+            {
+                _response.Result = _unitService.GetByUnitNumberAsync(unitNumber).Result;
+            }
+                if (_response.Result == null)
                 {
                     _response.IsSuccess = false;
                     _response.ErrorMessages.Add($"Unit with an Id of {unitNumber} not found");
@@ -94,42 +94,13 @@ namespace ComputerAidedDispatchAPI.Controllers
                 {
                     _response.IsSuccess = true;
                     _response.StatusCode = System.Net.HttpStatusCode.OK;
-                    _response.Result = unit;
                     return Ok(_response);
                 }
 
       
         }
 
-        // GET: api/Units/5
-        [HttpGet("Details/{unitNumber}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUnitDetails(string unitNumber)
-        {
-
-
-            var unit = _unitService.GetDetails(unitNumber);
-            if (unit == null)
-            {
-                _response.IsSuccess = false;
-                _response.ErrorMessages.Add($"Unit with an Id of {unitNumber} not found");
-                _response.StatusCode = System.Net.HttpStatusCode.NotFound;
-                return NotFound(_response);
-            }
-            else
-            {
-                _response.IsSuccess = true;
-                _response.StatusCode = System.Net.HttpStatusCode.OK;
-                _response.Result = unit;
-                return Ok(_response);
-            }
-
-
-        }
+       
 
         // PUT: api/Units/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -250,7 +221,11 @@ namespace ComputerAidedDispatchAPI.Controllers
 
         }
 
-        [HttpPost("/CreateUnitAndUser")]
+        [HttpPost("CreateUnitAndUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateUnitAndUser([FromBody] UnitAndUserCreateDTO createDTO)
         {
             var response = _unitService.CreateUnitAndUserAsync(createDTO).Result;
@@ -272,7 +247,7 @@ namespace ComputerAidedDispatchAPI.Controllers
         }
 
         // DELETE: api/Units/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{unitNumber}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

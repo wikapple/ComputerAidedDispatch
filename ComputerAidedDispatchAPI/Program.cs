@@ -33,6 +33,7 @@ builder.Services.AddScoped<ICallForServiceRepository, CallForServiceRepository>(
 builder.Services.AddScoped<IDispatcherRepository, DispatcherRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
+builder.Services.AddScoped<IDispatcherService, DispatcherService>();
 builder.Services.AddScoped<ICallForServiceService, CallForServiceService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));

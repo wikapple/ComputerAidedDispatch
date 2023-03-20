@@ -4,6 +4,7 @@ using ComputerAidedDispatchAPI.Models.DTOs.UnitDTOs;
 using ComputerAidedDispatchAPI.Repository.IRepository;
 using ComputerAidedDispatchAPI.Service.IService;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Linq.Expressions;
 
 namespace ComputerAidedDispatchAPI.Service;
 
@@ -41,8 +42,10 @@ public class UnitService : IUnitService
 
 			await _unitRepository.CreateAsync(newUnit);
 
-			return _mapper.Map<UnitReadDTO>(newUnit);
-		}
+            var newlyCreatedUnit = _unitRepository.GetAsync(x => x.UnitNumber == createDTO.UnitNumber, includeProperties: "UserInfo");
+
+            return _mapper.Map<UnitReadDTO>(newlyCreatedUnit);
+        }
 		return null;
 	}
 	// Create new user and unit in one method
@@ -67,7 +70,8 @@ public class UnitService : IUnitService
 
 				await _unitRepository.CreateAsync(unit);
 
-				return _mapper.Map<UnitReadDTO>(unit);
+				var newlyCreatedUnit = _unitRepository.GetAsync(x => x.UnitNumber == createDTO.UnitNumber, includeProperties: "UserInfo").Result;
+				return _mapper.Map<UnitReadDTO>(newlyCreatedUnit);
 			}
 		}
 		return null;
@@ -77,7 +81,8 @@ public class UnitService : IUnitService
 	// Read One
 	public async Task<UnitReadDTO?> GetByUnitNumberAsync(string unitNumber)
 	{
-		var queriedUnit = await _unitRepository.GetAsync((x) => x.UnitNumber == unitNumber);
+		var queriedUnit = 
+            await _unitRepository.GetAsync((x) => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
 
 		if (queriedUnit == null)
 		{
@@ -85,79 +90,64 @@ public class UnitService : IUnitService
 		}
 		else
 		{
-
-			UnitReadDTO unitDTO = _mapper.Map<UnitReadDTO>(queriedUnit);
-			
-			return unitDTO;
+			return _mapper.Map<UnitReadDTO>(queriedUnit);
 		}
 	}
 
-	// Get Details of one unit by UnitNumber:
-	public UnitDetailsReadDTO? GetDetails(string unitNumber)
+    public async Task<UnitDetailsReadDTO?> GetDetailsByUnitNumberAsync(string unitNumber)
 	{
-        var queriedUnit = _unitRepository.GetDetails(unitNumber);
+        var queriedUnit =
+            await _unitRepository.GetAsync((x) => x.UnitNumber == unitNumber, includeProperties: "UserInfo,CallForService");
 
         if (queriedUnit == null)
         {
-
             return null;
+        }
+        else
+        {
+            return _mapper.Map<UnitDetailsReadDTO>(queriedUnit);
+        }
+    }
+
+    // Read All
+    public async Task<List<UnitReadDTO>> GetAllAsync(int? callNumber = null, string? status = null)
+	{
+		// Create filter func:
+		Expression<Func<Unit, bool>>? filter;
+
+		if(callNumber != null && status != null)
+		{
+			filter = u => u.CallNumber == callNumber && u.Status == status;
+		}
+		else if(callNumber != null)
+		{
+			filter = u => u.CallNumber == callNumber;
+        }
+		else if(status != null)
+		{
+			filter = u => u.Status == status;
         }
 		else
 		{
-
-			UnitDetailsReadDTO unitDetailsDTO = _mapper.Map<UnitDetailsReadDTO>(queriedUnit);
-
-			return unitDetailsDTO;
+			filter = null;
 		}
-    }
-
-	// Read All
-	public async Task<List<UnitReadDTO>> GetAllAsync()
-	{
-		List<Unit> units = await _unitRepository.GetAllAsync();
-
-		var unitDTOs = units.Select(unit => _mapper.Map<UnitReadDTO>(unit)).OrderBy(x => x.Status).ThenBy(x => x.UnitNumber).ToList();
-
-
-		return unitDTOs;
+		
+		List<Unit> unitList = await _unitRepository.GetAllAsync(filter, includeProperties: "UserInfo");
+			return unitList.Select(u => _mapper.Map<UnitReadDTO>(u)).ToList();
+			
 	}
 
-    public async Task<List<UnitDetailsReadDTO>> GetAllDetailsAsync()
-    {
-        List<Unit> units = await _unitRepository.GetAllAsync();
-
-        var unitDTOs = units.Select(unit => _mapper.Map<UnitDetailsReadDTO>(unit)).OrderBy(x => x.Status).ThenBy(x => x.StatusDuration).ToList();
-
-        return unitDTOs;
-    }
-
-    // Filter By Call Number
-    public async Task<List<UnitReadDTO>> FilterByCallNumberAsync(int callNumber)
+	public async Task<List<UnitDetailsReadDTO>> GetAllDetailsAsync(int? callNumber = null, string? status = null)
 	{
-		List<Unit> units = await _unitRepository.GetAllAsync(x => x.CallNumber == callNumber);
-
-		return units.Select(unit => _mapper.Map<UnitReadDTO>(unit)).ToList();
-	}
-
-    public async Task<List<UnitReadDTO>> FilterByStatusAsync(string status)
-    {
-        List<Unit> units = await _unitRepository.GetAllAsync(x => x.Status == status);
-
-        return units.Select(unit => _mapper.Map<UnitReadDTO>(unit)).ToList();
-    }
-
-    public async Task<List<UnitReadDTO>> FilterByCallNumberAndStatusAsync(int callNumber, string status)
-    {
-        List<Unit> units = await _unitRepository.GetAllAsync(x => x.Status == status && x.CallNumber == callNumber);
-
-        return units.Select(unit => _mapper.Map<UnitReadDTO>(unit)).ToList();
+        List<Unit> unitList = await _unitRepository.GetAllAsync(includeProperties: "UserInfo,CallForService");
+        return unitList.Select(u => _mapper.Map<UnitDetailsReadDTO>(u)).ToList();
     }
 
 
     // Update
     public async Task<UnitReadDTO?> UpdateAsync(UnitUpdateDTO updateDTO)
 	{
-		var unit = await _unitRepository.GetAsync(x => x.UnitNumber == updateDTO.UnitNumber);
+		var unit = await _unitRepository.GetAsync(x => x.UnitNumber == updateDTO.UnitNumber, includeProperties: "UserInfo");
 
 		if (unit != null)
 		{
@@ -177,7 +167,7 @@ public class UnitService : IUnitService
 	// Update Status
 	public async Task<UnitReadDTO?> UpdateStatusAsync(string unitNumber, string status)
 	{
-        var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber);
+        var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
 
 		if(unit != null)
 		{
@@ -195,7 +185,7 @@ public class UnitService : IUnitService
 	// Update Call
 	public async Task<UnitReadDTO?> AssignCallAsync(string unitNumber, int? callNumber)
 	{
-        var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber);
+        var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
 
 		if ( unit != null &&
 			( callNumber == null || await _callService.GetAsync((int)callNumber!) != null) )

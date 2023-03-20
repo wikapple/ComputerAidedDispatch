@@ -1,4 +1,4 @@
-﻿namespace ComputerAidedDispatchAPI.Models.DTOs
+﻿namespace ComputerAidedDispatchAPI.Models.DTOs.UserDTOs
 {
     public class UserDTO
     {
