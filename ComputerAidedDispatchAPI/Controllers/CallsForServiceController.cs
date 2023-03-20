@@ -7,6 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ComputerAidedDispatchAPI.Data;
 using ComputerAidedDispatchAPI.Models;
+using ComputerAidedDispatchAPI.Service.IService;
+using ComputerAidedDispatchAPI.Models.DTOs.CallForServiceDTOs;
+using ComputerAidedDispatchAPI.Service;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ComputerAidedDispatchAPI.Controllers;
 
@@ -14,95 +18,154 @@ namespace ComputerAidedDispatchAPI.Controllers;
 [ApiController]
 public class CallsForServiceController : ControllerBase
 {
-    private readonly ComputerAidedDispatchContext _CadDb;
+    private readonly ICallForServiceService _callService;
+    protected APIResponse _response;
 
-    public CallsForServiceController(ComputerAidedDispatchContext context)
+    public CallsForServiceController(ICallForServiceService callService)
     {
-        _CadDb = context;
+        _callService = callService;
+        _response = new();
     }
 
     // GET: api/CallsForService
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<CallForService>>> GetCallsForService()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> GetCallsForService([FromQuery(Name = "getDetails")] bool getDetails = false)
     {
-        return await _CadDb.CallsForService.ToListAsync();
+        if (getDetails)
+        {
+            List<CallForServiceDetailsReadDTO> callList = await _callService.GetAllDetailsAsync();
+            _response.Result = callList;
+        }
+        else
+        {
+            List<CallForServiceReadDTO> callList = await _callService.GetAllAsync();
+            _response.Result = callList;
+        }
+        _response.IsSuccess = true;
+        _response.StatusCode = System.Net.HttpStatusCode.OK;
+        return Ok(_response);
     }
 
     // GET: api/CallsForService/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<CallForService>> GetCallForService(int id)
+    [HttpGet("{callId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetCallForService(int callId, [FromQuery(Name = "getDetails")] bool getDetails = false)
     {
-
-        var callForService = await _CadDb.CallsForService.FindAsync(id);
-
-        if (callForService == null)
+        if (getDetails)
         {
-            return NotFound();
+            _response.Result = await _callService.GetDetailsAsync(callId);
+        }
+        else
+        {
+            _response.Result = await _callService.GetAsync(callId);
         }
 
-        return callForService;
+        if (_response.Result == null)
+        {
+            _response.IsSuccess = false;
+            _response.ErrorMessages.Add($"CallForService with an Id of {callId} not found");
+            _response.StatusCode = System.Net.HttpStatusCode.NotFound;
+            return NotFound(_response);
+        }
+        else
+        {
+            _response.IsSuccess = true;
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
+            return Ok(_response);
+        }
+        
     }
 
     // PUT: api/CallsForService/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutCallForService(int id, CallForService callForService)
+    [HttpPut("{callId:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PutCallForService(int callId, CallForServiceUpdateDTO updateDTO)
     {
-        if (id != callForService.Id)
+        if (callId != updateDTO.Id)
         {
-            return BadRequest();
+            _response.IsSuccess = false;
+            _response.ErrorMessages.Add("Id from callId and CallForServiceUpdateDTO parameters do not match");
+            _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            return BadRequest(_response);
         }
 
-        _CadDb.Entry(callForService).State = EntityState.Modified;
+        var result = await _callService.UpdateAsync(updateDTO);
 
-        try
+        if(result == null)
         {
-            await _CadDb.SaveChangesAsync();
+            _response.ErrorMessages.Add($"Failed to update CallForService with Id {callId}, verify that the call for service exists");
+            _response.StatusCode = System.Net.HttpStatusCode.NotFound;
+            _response.IsSuccess = false;
+            return NotFound(_response);
         }
-        catch (DbUpdateConcurrencyException)
+        else
         {
-            if (!CallForServiceExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
+            _response.IsSuccess = true;
+            _response.Result = result;
+            return Ok(_response);
         }
-
-        return NoContent();
     }
 
     // POST: api/CallsForService
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<CallForService>> PostCallForService(CallForService callForService)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> CreateCallForService(CallForServiceCreateDTO createDTO)
     {
-        _CadDb.CallsForService.Add(callForService);
-        await _CadDb.SaveChangesAsync();
-
-        return CreatedAtAction("GetCallForService", new { id = callForService.Id }, callForService);
+        var response = await _callService.CreateAsync(createDTO);
+        if (response == null)
+        {
+            _response.IsSuccess = false;
+            _response.ErrorMessages.Add($"Failed to create new CallForService");
+            _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            return BadRequest(_response);
+        }
+        else
+        {
+            _response.IsSuccess = true;
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
+            _response.Result = response;
+            return Ok(_response);
+        }
     }
 
     // DELETE: api/CallsForService/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteCallForService(int id)
+    [HttpDelete("{Id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteCallForService(int Id)
     {
-        var callForService = await _CadDb.CallsForService.FindAsync(id);
-        if (callForService == null)
+        var callToDelete = await _callService.GetAsync(Id);
+
+        if (callToDelete == null)
         {
-            return NotFound();
+            _response.IsSuccess = false;
+            _response.ErrorMessages.Add($"Failed to find CallForService with Id of {Id}");
+            _response.StatusCode = System.Net.HttpStatusCode.NotFound;
+            return NotFound(_response);
         }
-
-        _CadDb.CallsForService.Remove(callForService);
-        await _CadDb.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool CallForServiceExists(int id)
-    {
-        return _CadDb.CallsForService.Any(e => e.Id == id);
+        else
+        {
+            await _callService.DeleteAsync(Id);
+            return NoContent();
+        }
     }
 }

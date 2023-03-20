@@ -11,10 +11,9 @@ namespace ComputerAidedDispatchAPI.Service
     public class CallForServiceService : ICallForServiceService
     {
 
-        ICallForServiceRepository _callRepository;
-        IUnitService _unitService;
-        ICallCommentService _callCommentService;
-        IMapper _mapper;
+        private readonly ICallForServiceRepository _callRepository;
+        private readonly IUnitService _unitService;
+        private readonly IMapper _mapper;
 
         public CallForServiceService(ICallForServiceRepository callRepository, IUnitService unitService, IMapper mapper)
         {
@@ -155,7 +154,10 @@ namespace ComputerAidedDispatchAPI.Service
             {
                 var unit = await _unitService.GetByUnitNumberAsync(unitId);
                 if (unit != null && unit.CallNumber == callId)
+                {
                     await _unitService.AssignCallAsync(unitId, null);
+                    await _unitService.UpdateStatusAsync(unitId, "Available");
+                }
             }
         }
         public Task PostComment(int callId, CreateCallCommentDTO createCommentDTO)
@@ -163,9 +165,13 @@ namespace ComputerAidedDispatchAPI.Service
             throw new NotImplementedException();
         }
 
-        public Task DeleteAsync(int callId)
+        public async Task DeleteAsync(int callId)
         {
-            throw new NotImplementedException();
+            var callToDelete = await _callRepository.GetAsync(cfs => cfs.Id == callId);
+            if(callToDelete != null)
+            {
+                await _callRepository.RemoveAsync(callToDelete);
+            }
         }
 
        

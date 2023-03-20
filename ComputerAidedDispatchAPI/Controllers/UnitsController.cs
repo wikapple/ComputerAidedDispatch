@@ -36,31 +36,17 @@ namespace ComputerAidedDispatchAPI.Controllers
 
             if (getDetails)
             {
-                List<UnitDetailsReadDTO> unitList = _unitService.GetAllDetailsAsync(callNumber, status).Result;
+                List<UnitDetailsReadDTO> unitList = await _unitService.GetAllDetailsAsync(callNumber, status);
                 _response.Result = unitList;
             }
             else
             {
-                List<UnitReadDTO> unitList = _unitService.GetAllAsync(callNumber, status).Result;
+                List<UnitReadDTO> unitList = await _unitService.GetAllAsync(callNumber, status);
                 _response.Result = unitList;
             }
             _response.IsSuccess = true;
             _response.StatusCode = System.Net.HttpStatusCode.OK;
             
-            return Ok(_response);
-        }
-
-
-        [HttpGet("Details")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> GetAllUnitDetails()
-        {
-            var unitDetailsList = await _unitService.GetAllDetailsAsync();
-            _response.IsSuccess = true;
-            _response.StatusCode = System.Net.HttpStatusCode.OK;
-            _response.Result = unitDetailsList;
             return Ok(_response);
         }
 
@@ -71,17 +57,17 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetUnit(string unitNumber, [FromQuery] bool getDetails = false)
+        public async Task<IActionResult> GetUnit(string unitNumber, [FromQuery(Name = "getDetails")] bool getDetails = false)
         {
 
 
             if (getDetails)
             {
-                _response.Result = _unitService.GetDetailsByUnitNumberAsync(unitNumber).Result;
+                _response.Result = await _unitService.GetDetailsByUnitNumberAsync(unitNumber);
             }
             else
             {
-                _response.Result = _unitService.GetByUnitNumberAsync(unitNumber).Result;
+                _response.Result = await _unitService.GetByUnitNumberAsync(unitNumber);
             }
                 if (_response.Result == null)
                 {
@@ -131,6 +117,7 @@ namespace ComputerAidedDispatchAPI.Controllers
             }
             else
             {
+                _response.StatusCode=System.Net.HttpStatusCode.OK;
                 _response.IsSuccess = true;
                 _response.Result = result;
                 return Ok(_response);
@@ -203,7 +190,7 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateUnit([FromBody] UnitCreateDTO createDTO)
         {
-            var response = _unitService.CreateAsync(createDTO).Result;
+            var response = await _unitService.CreateAsync(createDTO);
             if (response == null)
             {
                 _response.IsSuccess = false;
@@ -228,7 +215,7 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> CreateUnitAndUser([FromBody] UnitAndUserCreateDTO createDTO)
         {
-            var response = _unitService.CreateUnitAndUserAsync(createDTO).Result;
+            var response = await _unitService.CreateUnitAndUserAsync(createDTO);
             if (response == null)
             {
                 _response.IsSuccess = false;
@@ -254,7 +241,7 @@ namespace ComputerAidedDispatchAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteUnit(string unitNumber)
         {
-            var unit = _unitService.GetByUnitNumberAsync(unitNumber).Result;
+            var unit = await _unitService.GetByUnitNumberAsync(unitNumber);
 
             if(unit == null)
             {

@@ -31,10 +31,12 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitRepository, UnitRepository>();
 builder.Services.AddScoped<ICallForServiceRepository, CallForServiceRepository>();
 builder.Services.AddScoped<IDispatcherRepository, DispatcherRepository>();
+builder.Services.AddScoped<ICallCommentRepository, CallCommentRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUnitService, UnitService>();
 builder.Services.AddScoped<IDispatcherService, DispatcherService>();
 builder.Services.AddScoped<ICallForServiceService, CallForServiceService>();
+builder.Services.AddScoped<ICallCommentService, CallCommentService>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
