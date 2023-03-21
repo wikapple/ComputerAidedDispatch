@@ -4,5 +4,6 @@
     {
         public string Comment { get; set; }
         public int CallNumber { get; set; }
+        public string userId { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace ComputerAidedDispatchAPI.Repository
 
             if (thisCall == null && thisCall.Status != entity.Status) 
             {
-                entity.TimeStatusAssigned = DateTime.Now;
+                entity.DateTimeStatusAssigned = DateTime.Now;
             }
             
             _db.CallsForService.Update(entity);

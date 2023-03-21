@@ -7,6 +7,7 @@ namespace ComputerAidedDispatchAPI.Service.IService
     public interface ICadSharedService
     {
         Task<UnitReadDTO> AssignCallAsync(string unitId, int? callId);
+        Task<bool> DoesCallForServiceExist(int callNumber);
         bool DoesUserIdExist(string userId);
         Task<UnitReadDTO> GetByUnitNumberAsync(string unitId);
         Task<UserDTO?> Register(RegistrationRequestDTO registrationRequestDTO);

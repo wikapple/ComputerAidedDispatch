@@ -11,14 +11,21 @@ public class CallForService
     public int Id { get; set; }
     [Required]
     public DateTime DateTimeCreated { get; set; }
-
-    public DateTime TimeStatusAssigned { get; set; }
-
-    public TimeSpan DurationSinceTimeAssigned 
+    public TimeSpan DurationSinceCreated
     {
         get
         {
-            return DateTime.Now.Subtract(TimeStatusAssigned);
+            return DateTime.Now.Subtract(DateTimeCreated);
+        }
+    }
+
+    public DateTime DateTimeStatusAssigned { get; set; }
+
+    public TimeSpan DurationSinceStatusAssigned 
+    {
+        get
+        {
+            return DateTime.Now.Subtract(DateTimeStatusAssigned);
         }
     }
 

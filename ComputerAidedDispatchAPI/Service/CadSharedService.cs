@@ -43,6 +43,11 @@ public class CadSharedService : ICadSharedService
         }
     }
 
+    public async Task<bool> DoesCallForServiceExist(int callId)
+    {
+        return await _callRepository.GetAsync(call => call.Id == callId) != null;
+    }
+
     public bool DoesUserIdExist(string userId)
     {
         return _userRepository.GetUser(userId) != null;
