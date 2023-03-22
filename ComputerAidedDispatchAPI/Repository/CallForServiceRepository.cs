@@ -16,11 +16,6 @@ namespace ComputerAidedDispatchAPI.Repository
         public async Task<CallForService> UpdateAsync(CallForService entity)
         {
             var thisCall = _db.CallsForService.FirstOrDefault(x => x.Id == entity.Id);
-
-            if (thisCall == null && thisCall.Status != entity.Status) 
-            {
-                entity.DateTimeStatusAssigned = DateTime.Now;
-            }
             
             _db.CallsForService.Update(entity);
             await _db.SaveChangesAsync();

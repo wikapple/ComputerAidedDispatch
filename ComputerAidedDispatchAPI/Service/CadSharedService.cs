@@ -34,6 +34,7 @@ public class CadSharedService : ICadSharedService
             (callNumber == null || await _callRepository.GetAsync(call => call.Id == callNumber) != null))
         {
             unit.CallNumber = callNumber;
+            unit.Status = "Assigned";
             await _unitRepository.UpdateAsync(unit);
             return _mapper.Map<UnitReadDTO>(unit);
         }

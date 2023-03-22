@@ -7,102 +7,93 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ComputerAidedDispatchAPI.Data;
 using ComputerAidedDispatchAPI.Models;
+using ComputerAidedDispatchAPI.Service.IService;
+using ComputerAidedDispatchAPI.Models.DTOs.CallCommentDTOs;
+using ComputerAidedDispatchAPI.Service;
 
-namespace ComputerAidedDispatchAPI.Controllers
+namespace ComputerAidedDispatchAPI.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class CallCommentsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CallCommentsController : ControllerBase
+    ICallCommentService _commentService;
+    APIResponse _response;
+
+    public CallCommentsController(ICallCommentService commentService)
     {
-        private readonly ComputerAidedDispatchContext _context;
+        _commentService = commentService;
+        _response = new();
+    }
 
-        public CallCommentsController(ComputerAidedDispatchContext context)
+    // GET: api/CallComments
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<IEnumerable<CallComment>>> GetCallComments([FromQuery(Name = "callId")]int? callNumber)
+    {
+        List<CallCommentReadDTO> commentList = await _commentService.GetAllAsync(callNumber);
+        _response.Result = commentList;
+        _response.StatusCode = System.Net.HttpStatusCode.OK;
+        _response.IsSuccess = true;
+        return Ok(_response);
+    }
+
+    // GET: api/CallComments/5
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CallComment>> GetCallComment(int id)
+    {
+        var comment = await _commentService.GetAsync(id);
+        if (comment == null)
         {
-            _context = context;
+            _response.ErrorMessages.Add($"Unable to retrieve CallComment with an Id of {id}");
+            _response.IsSuccess = false;
+            _response.StatusCode = System.Net.HttpStatusCode.NotFound;
+            return NotFound(_response);
         }
-
-        // GET: api/CallComments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CallComment>>> GetCallComments()
+        else
         {
-            return await _context.CallComments.ToListAsync();
-        }
-
-        // GET: api/CallComments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CallComment>> GetCallComment(int id)
-        {
-            var callComment = await _context.CallComments.FindAsync(id);
-
-            if (callComment == null)
-            {
-                return NotFound();
-            }
-
-            return callComment;
-        }
-
-        // PUT: api/CallComments/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCallComment(int id, CallComment callComment)
-        {
-            if (id != callComment.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(callComment).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CallCommentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/CallComments
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<CallComment>> PostCallComment(CallComment callComment)
-        {
-            _context.CallComments.Add(callComment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCallComment", new { id = callComment.Id }, callComment);
-        }
-
-        // DELETE: api/CallComments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCallComment(int id)
-        {
-            var callComment = await _context.CallComments.FindAsync(id);
-            if (callComment == null)
-            {
-                return NotFound();
-            }
-
-            _context.CallComments.Remove(callComment);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool CallCommentExists(int id)
-        {
-            return _context.CallComments.Any(e => e.Id == id);
+            _response.IsSuccess = true;
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
+            _response.Result = comment;
+            return Ok(_response);
         }
     }
+
+    
+
+    // POST: api/CallComments
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<ActionResult<CallComment>> PostCallComment(CreateCallCommentDTO createDTO)
+    {
+
+        var response = await _commentService.CreateAsync(createDTO);
+        if (response == null)
+        {
+            _response.IsSuccess = false;
+            _response.ErrorMessages.Add($"Failed to create new CallComment for CallId {createDTO.CallNumber}");
+            _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+            return BadRequest(_response);
+        }
+        else
+        {
+            _response.IsSuccess = true;
+            _response.StatusCode = System.Net.HttpStatusCode.OK;
+            _response.Result = response;
+            return Ok(_response);
+        }
+    }
+
+
 }

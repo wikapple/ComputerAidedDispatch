@@ -13,11 +13,13 @@ public class UserService : IUserService
 
 	private readonly IUserRepository _userRepository;
 	private readonly ICadSharedService _sharedService;
+	private readonly IConfiguration _configuration;
 
-	public UserService(IUserRepository userRepo, ICadSharedService sharedService)
+	public UserService(IUserRepository userRepo, ICadSharedService sharedService, IConfiguration configuration)
 	{
 		_sharedService = sharedService;
 		_userRepository = userRepo;
+		_configuration = configuration;
 		CreateDefaultUsersIfNotExists();
 
 	}
@@ -46,6 +48,18 @@ public class UserService : IUserService
 	{
 		if (!_userRepository.DoesDefaultSystemUserExist())
 		{
+
+            RegistrationRequestDTO defaultSystemUser = new()
+            {
+                UserName = _configuration.GetValue<string>("ApiSettings:Default-System-user:UserName")!,
+				Name = _configuration.GetValue<string>("ApiSettings:Default-System-user:Name")!,
+                Password = _configuration.GetValue<string>("ApiSettings:Default-System-user:Password")!,
+                Roles = new List<String> { "system", "admin" }
+            };
+
+            
+			
+			/*
 			RegistrationRequestDTO defaultSystemUser = new()
 			{
 				UserName = "SystemTestUser",
@@ -53,6 +67,7 @@ public class UserService : IUserService
 				Password = "HELLOworld!!11",
 				Roles = new List<String>{"system", "admin"}
 			};
+			*/
 
 			_userRepository.Register(defaultSystemUser);
 		}

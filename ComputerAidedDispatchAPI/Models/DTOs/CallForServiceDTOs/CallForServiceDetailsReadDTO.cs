@@ -12,8 +12,6 @@ public class CallForServiceDetailsReadDTO
     public string Description { get; set; }
     public string? Caller_info { get; set; }
     public DateTime DateTimeCreated { get; set; }
-    public DateTime TimeStatusAssigned { get; set; }
-    public TimeSpan DurationSinceTimeAssigned { get; set; }
     public List<UnitReadDTO>? Units { get; set; }
     public List<CallCommentReadDTO>? CallComments { get; set; }
 }

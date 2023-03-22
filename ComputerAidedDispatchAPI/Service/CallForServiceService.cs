@@ -73,7 +73,6 @@ namespace ComputerAidedDispatchAPI.Service
             CallForService newCallForService = new()
             {
                 DateTimeCreated = DateTime.Now,
-                Status = "Created",
                 CallType = createDTO.CallType,
                 Address = createDTO.Address,
                 Caller_info = createDTO.Caller_info,
@@ -112,23 +111,6 @@ namespace ComputerAidedDispatchAPI.Service
                 var resultDispatcher = await _callRepository.UpdateAsync(CallToUpdate);
 
                 return _mapper.Map<CallForServiceReadDTO?>(resultDispatcher);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-
-        public async Task<CallForServiceReadDTO?> UpdateStatus(int callId, string status)
-        {
-            var call = await _callRepository.GetAsync(cfs => cfs.Id == callId);
-
-            if(call != null)
-            {
-                call.Status = status;
-                var resultDispatcher = await _callRepository.UpdateAsync(call);
-                return _mapper.Map<CallForServiceReadDTO>(resultDispatcher);
             }
             else
             {

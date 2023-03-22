@@ -9,9 +9,9 @@ namespace ComputerAidedDispatchAPI.Service
     public class CallCommentService: ICallCommentService
     {
 
-        ICallCommentRepository _commentRepository;
-        ICadSharedService _sharedService;
-        IMapper _mapper;
+        private readonly ICallCommentRepository _commentRepository;
+        private readonly ICadSharedService _sharedService;
+        private readonly IMapper _mapper;
         public CallCommentService(ICallCommentRepository callCommentRepository, ICadSharedService sharedService, IMapper mapper)
         {
             _commentRepository= callCommentRepository;
@@ -30,6 +30,7 @@ namespace ComputerAidedDispatchAPI.Service
                     Comment = createCallCommentDTO.Comment,
                     TimeCreated = DateTime.Now,
                     CallId = createCallCommentDTO.CallNumber,
+                    userId = createCallCommentDTO.userId
                 };
 
                 var response = await _commentRepository.CreateAsync(newComment);

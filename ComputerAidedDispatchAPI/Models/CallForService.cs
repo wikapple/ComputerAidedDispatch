@@ -19,15 +19,6 @@ public class CallForService
         }
     }
 
-    public DateTime DateTimeStatusAssigned { get; set; }
-
-    public TimeSpan DurationSinceStatusAssigned 
-    {
-        get
-        {
-            return DateTime.Now.Subtract(DateTimeStatusAssigned);
-        }
-    }
 
     [Required]
     [MaxLength(100)]
@@ -36,9 +27,28 @@ public class CallForService
     [Required]
     [MaxLength(200)]
     public string Address { get; set; }
-    [Required]
-    [MaxLength(50)]
-    public String Status { get; set; }
+    public string Status 
+    {
+        get
+        {
+            if(Units == null || !Units.Any())
+            {
+                return "Created";
+            }
+            else if(Units.Any(unit => unit.Status == "On Scene"))
+            {
+                return "On Scene";
+            }
+            else if(Units.Any(unit => unit.Status == "En Route"))
+            {
+                return "En Route";
+            }
+            else
+            {
+                return "Assigned";
+            }
+        }
+    }
     public string? Caller_info { get; set; }
     public string Description { get; set; }
     public List<CallComment>? CallComments { get; set; }
