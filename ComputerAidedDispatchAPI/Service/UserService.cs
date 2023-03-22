@@ -58,16 +58,7 @@ public class UserService : IUserService
             };
 
             
-			
-			/*
-			RegistrationRequestDTO defaultSystemUser = new()
-			{
-				UserName = "SystemTestUser",
-				Name = "SystemUser",
-				Password = "HELLOworld!!11",
-				Roles = new List<String>{"system", "admin"}
-			};
-			*/
+		
 
 			_userRepository.Register(defaultSystemUser);
 		}
