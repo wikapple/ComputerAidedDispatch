@@ -1,6 +1,7 @@
 ﻿using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Models.DTOs;
 using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
+using System.Linq.Expressions;
 
 namespace ComputerAidedDispatchAPI.Repository.IRepository
 {
@@ -12,5 +13,6 @@ namespace ComputerAidedDispatchAPI.Repository.IRepository
         public bool DoesDefaultSystemUserExist();
         public bool DoesDefaultTestUserExist();
         ApplicationUser? GetUser(string userId);
+        ApplicationUser? GetUser(Expression<Func<ApplicationUser, bool>> filter);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ComputerAidedDispatchAPI.Data;
 using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace ComputerAidedDispatchAPI.Repository
 {
@@ -18,7 +19,7 @@ namespace ComputerAidedDispatchAPI.Repository
             var thisCall = _db.CallsForService.FirstOrDefault(x => x.Id == entity.Id);
             
             _db.CallsForService.Update(entity);
-            await _db.SaveChangesAsync();
+            await SaveAsync();
             return entity;
         }
     }

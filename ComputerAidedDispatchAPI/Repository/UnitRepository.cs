@@ -9,7 +9,6 @@ namespace ComputerAidedDispatchAPI.Repository
     public class UnitRepository : Repository<Unit?>, IUnitRepository
     {
         private readonly ComputerAidedDispatchContext _db;
-
         public UnitRepository(ComputerAidedDispatchContext db) :base(db)
         {
             _db = db;

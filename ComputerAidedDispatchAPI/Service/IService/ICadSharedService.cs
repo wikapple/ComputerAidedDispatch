@@ -10,6 +10,7 @@ namespace ComputerAidedDispatchAPI.Service.IService
         Task<bool> DoesCallForServiceExist(int callNumber);
         bool DoesUserIdExist(string userId);
         Task<UnitReadDTO> GetByUnitNumberAsync(string unitId);
+        string? GetUserIdByUserName(string userName);
         Task<UserDTO?> Register(RegistrationRequestDTO registrationRequestDTO);
         Task<UnitReadDTO> UpdateStatusAsync(string unitId, string v);
     }

@@ -3,7 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComputerAidedDispatchAPI", "ComputerAidedDispatchAPI\ComputerAidedDispatchAPI.csproj", "{59D9542C-9B14-447E-9C29-97EBD4135B0F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputerAidedDispatchAPI", "ComputerAidedDispatchAPI\ComputerAidedDispatchAPI.csproj", "{59D9542C-9B14-447E-9C29-97EBD4135B0F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputerAidedDispatchAIDispatcherConsoleApp", "ComputerAidedDispatchAIDispatcherConsoleApp\ComputerAidedDispatchAIDispatcherConsoleApp.csproj", "{15D60D5A-0FF0-42D1-9BE4-6547A2553D51}"
+	ProjectSection(ProjectDependencies) = postProject
+		{552B6FE9-6957-4302-B55C-4AC91A7290DC} = {552B6FE9-6957-4302-B55C-4AC91A7290DC}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComputerAidedDispatch_UtilityLibrary", "ComputerAidedDispatch_UtilityLibrary\ComputerAidedDispatch_UtilityLibrary.csproj", "{552B6FE9-6957-4302-B55C-4AC91A7290DC}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{EC6BF70C-6CD5-46E4-BA04-900513C981B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +24,18 @@ Global
 		{59D9542C-9B14-447E-9C29-97EBD4135B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59D9542C-9B14-447E-9C29-97EBD4135B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59D9542C-9B14-447E-9C29-97EBD4135B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15D60D5A-0FF0-42D1-9BE4-6547A2553D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15D60D5A-0FF0-42D1-9BE4-6547A2553D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15D60D5A-0FF0-42D1-9BE4-6547A2553D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15D60D5A-0FF0-42D1-9BE4-6547A2553D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{552B6FE9-6957-4302-B55C-4AC91A7290DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{552B6FE9-6957-4302-B55C-4AC91A7290DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{552B6FE9-6957-4302-B55C-4AC91A7290DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{552B6FE9-6957-4302-B55C-4AC91A7290DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC6BF70C-6CD5-46E4-BA04-900513C981B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC6BF70C-6CD5-46E4-BA04-900513C981B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC6BF70C-6CD5-46E4-BA04-900513C981B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC6BF70C-6CD5-46E4-BA04-900513C981B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

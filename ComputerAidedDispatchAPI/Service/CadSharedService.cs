@@ -69,6 +69,13 @@ public class CadSharedService : ICadSharedService
         }
     }
 
+    public string? GetUserIdByUserName(string userName)
+    {
+        var applicationUser = _userRepository.GetUser(user => user.UserName == userName);
+
+        return applicationUser.Id;
+    }
+
     public async Task<UserDTO?> Register(RegistrationRequestDTO registrationRequestDTO)
     {
         return await _userRepository.Register(registrationRequestDTO);

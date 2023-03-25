@@ -11,6 +11,7 @@ using ComputerAidedDispatchAPI.Service.IService;
 using ComputerAidedDispatchAPI.Models.DTOs.CallCommentDTOs;
 using ComputerAidedDispatchAPI.Service;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ComputerAidedDispatchAPI.Controllers;
 
@@ -97,11 +98,24 @@ public class CallCommentsController : ControllerBase
     {
         try
         {
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
 
+            if (identity == null)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages.Add($"Identity claims token is null");
+                _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                return BadRequest(_response);
+            }
 
-            var response = await _commentService.CreateAsync(createDTO);
+            var userName = identity.Name;
+            var response = await _commentService.CreateAsync(createDTO, userName);
+
             if (response == null)
             {
+
+
+
                 _response.IsSuccess = false;
                 _response.ErrorMessages.Add($"Failed to create new CallComment for CallId {createDTO.CallNumber}");
                 _response.StatusCode = System.Net.HttpStatusCode.BadRequest;
@@ -109,6 +123,8 @@ public class CallCommentsController : ControllerBase
             }
             else
             {
+                
+
                 _response.IsSuccess = true;
                 _response.StatusCode = System.Net.HttpStatusCode.OK;
                 _response.Result = response;

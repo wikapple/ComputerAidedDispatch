@@ -12,8 +12,8 @@ namespace ComputerAidedDispatchAPI.Service.IService
         public Task<CallForServiceReadDTO?> CreateAsync(CallForServiceCreateDTO createDTO);
         public Task<CallForServiceReadDTO?> UpdateAsync(CallForServiceUpdateDTO updateDTO);
         public Task DeleteAsync(int callId);
-        public void AssignUnits(int callId, List<string> unitIds);
-        public void RemoveUnits(int callId, List<string> unitIds);
+        public Task AssignUnits(int callId, List<string> unitIds);
+        public Task RemoveUnits(int callId, List<string> unitIds);
         public Task PostComment(int callId, CreateCallCommentDTO createCommentDTO);
 
     }

@@ -1,4 +1,4 @@
-﻿namespace ComputerAidedDispatchAPI.Models.DTOs.CallCommentDTOs
+﻿namespace ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.CallCommentDTOs
 {
     public class CallCommentReadDTO
     {
@@ -7,6 +7,6 @@
         public string UserId { get; set; }
         public string Name { get; set; }
         public DateTime TimeCreated { get; set; }
-        public int CallId { get; set; }
+        public int CallForServiceNumber { get; set; }
     }
 }

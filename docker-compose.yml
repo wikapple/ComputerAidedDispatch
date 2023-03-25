@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  computeraideddispatchapi:
+    image: ${DOCKER_REGISTRY-}computeraideddispatchapi
+    ports:
+      -  "8088:80"
+      - "4433:443"
+    expose:
+      - "80"
+      - "443"
+    build:
+      context: .
+      dockerfile: ComputerAidedDispatchAPI/Dockerfile
+    networks:
+      -  back
+
+  computeraideddispatchaidispatcherconsoleapp:
+    image: ${DOCKER_REGISTRY-}computeraideddispatchaidispatcherconsoleapp
+    depends_on:
+      -  computeraideddispatchapi
+    build:
+      context: .
+      dockerfile: ComputerAidedDispatchAIDispatcherConsoleApp/Dockerfile
+    links:
+      -  computeraideddispatchapi
+    networks:
+      -  back
+
+networks:
+  back:
+    driver: bridge
+
+

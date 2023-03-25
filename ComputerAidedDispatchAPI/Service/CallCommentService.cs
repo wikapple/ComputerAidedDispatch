@@ -19,10 +19,10 @@ namespace ComputerAidedDispatchAPI.Service
             _mapper= mapper;
         }
 
-        public async Task<CallCommentReadDTO?> CreateAsync(CreateCallCommentDTO createCallCommentDTO)
+        public async Task<CallCommentReadDTO?> CreateAsync(CreateCallCommentDTO createCallCommentDTO, string userName)
         {
-
-            if (_sharedService.DoesUserIdExist(createCallCommentDTO.userId) &&
+            string? userId = _sharedService.GetUserIdByUserName(userName);
+            if ( userId != null &&
                 await _sharedService.DoesCallForServiceExist(createCallCommentDTO.CallNumber))
              {
                 CallComment newComment = new()
@@ -30,7 +30,7 @@ namespace ComputerAidedDispatchAPI.Service
                     Comment = createCallCommentDTO.Comment,
                     TimeCreated = DateTime.Now,
                     CallId = createCallCommentDTO.CallNumber,
-                    userId = createCallCommentDTO.userId
+                    userId = userId
                 };
 
                 var response = await _commentRepository.CreateAsync(newComment);

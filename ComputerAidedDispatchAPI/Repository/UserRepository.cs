@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 
@@ -72,7 +73,7 @@ namespace ComputerAidedDispatchAPI.Repository
                 new Claim(ClaimTypes.Name, user.UserName.ToString()),
                 new Claim(ClaimTypes.Role, roles.FirstOrDefault())
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(90),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -147,6 +148,12 @@ namespace ComputerAidedDispatchAPI.Repository
         public ApplicationUser? GetUser(string userId)
         {
             return _db.ApplicationUsers.FirstOrDefault(au => au.Id == userId);
+        }
+
+        public ApplicationUser? GetUser(Expression<Func<ApplicationUser, bool>> filter)
+        {
+            var returnVal =  _db.ApplicationUsers.FirstOrDefault(filter);
+            return returnVal;
         }
     }
 }

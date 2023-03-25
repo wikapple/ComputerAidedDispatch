@@ -1,0 +1,28 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "computeraideddispatchaidispatcherconsoleapp": "StartDebugging",
+        "computeraideddispatchapi": "StartDebugging"
+      }
+    },
+    "DockerComposeWebApi": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "computeraideddispatchaidispatcherconsoleapp": "DoNotStart",
+        "computeraideddispatchapi": "StartWithoutDebugging"
+      }
+    },
+    "ConsoleApp": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "computeraideddispatchaidispatcherconsoleapp": "StartDebugging",
+        "computeraideddispatchapi": "DoNotStart"
+      }
+    }
+  }
+}

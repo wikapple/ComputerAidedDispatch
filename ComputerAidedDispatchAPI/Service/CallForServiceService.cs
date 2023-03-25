@@ -118,7 +118,7 @@ namespace ComputerAidedDispatchAPI.Service
             }
         }
 
-        public async void AssignUnits(int callId, List<string> unitIds)
+        public async Task AssignUnits(int callId, List<string> unitIds)
         {
             foreach (var unitId in unitIds)
             {
@@ -129,7 +129,7 @@ namespace ComputerAidedDispatchAPI.Service
           
               
         }
-        public async void RemoveUnits(int callId, List<string> unitIds)
+        public async Task RemoveUnits(int callId, List<string> unitIds)
         {
             foreach (var unitId in unitIds)
             {
@@ -151,6 +151,10 @@ namespace ComputerAidedDispatchAPI.Service
             var callToDelete = await _callRepository.GetAsync(cfs => cfs.Id == callId);
             if(callToDelete != null)
             {
+                if (callToDelete!.Units.Any())
+                {
+                    await RemoveUnits(callToDelete.Id, callToDelete.Units.Select(unit => unit.UnitNumber).ToList());
+                }
                 await _callRepository.RemoveAsync(callToDelete);
             }
         }

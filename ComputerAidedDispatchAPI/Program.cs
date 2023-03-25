@@ -115,7 +115,9 @@ if (app.Environment.IsDevelopment())
      app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// Must use more advanced docker skills in order to implement Https redirection:
+// app.UseHttpsRedirection();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

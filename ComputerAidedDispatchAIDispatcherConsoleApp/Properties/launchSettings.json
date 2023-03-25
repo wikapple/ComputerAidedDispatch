@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ComputerAidedDispatchAIDispatcherConsoleApp": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
