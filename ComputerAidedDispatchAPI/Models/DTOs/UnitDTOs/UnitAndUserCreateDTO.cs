@@ -6,5 +6,12 @@ namespace ComputerAidedDispatchAPI.Models.DTOs.UnitDTOs
     {
         public RegistrationRequestDTO RegistrationDTO { get; set; }
         public string UnitNumber { get; set; }
+
+        public string Status { get; set; }
+
+        public UnitAndUserCreateDTO()
+        {
+            Status = "Unavailable";
+        }
     }
 }

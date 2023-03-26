@@ -1,4 +1,5 @@
 ﻿using ComputerAidedDispatch_UtilityLibrary;
+using ComputerAidedDispatchAIDispatcherConsoleApp.Models;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.UnitDTOs;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Services.IServices;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,17 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             _clientFactory = clientFactory;
             this.cadUrl = configuration.GetConnectionString("BaseApiUrl");
            
+        }
+
+        public Task<T> CreateAsync<T>(UnitAndUserCreateDTO dto, string token)
+        {
+            return SendAsync<T>(new APIRequest()
+            {
+                ApiType = SD.ApiType.POST,
+                Data = dto,
+                Url = $@"{cadUrl}/api/units/createunitanduser",
+                Token = token
+            });
         }
 
         public async Task<T> GetAllAsync<T>()

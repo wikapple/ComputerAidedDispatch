@@ -1,5 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using ComputerAidedDispatchAIDispatcherConsoleApp;
+using ComputerAidedDispatchAIDispatcherConsoleApp.Core;
+using ComputerAidedDispatchAIDispatcherConsoleApp.Core.ICore;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Services;
@@ -33,21 +34,31 @@ var host = Host.CreateDefaultBuilder()
     .ConfigureServices((context, services) =>
     {
         services.AddHttpClient<IAuthService, AuthService>();
-        services.AddScoped<IAuthService, AuthService>();
+        services.AddSingleton<IAuthService, AuthService>();
 
         services.AddHttpClient<ICallForServiceService, CallForServiceService>();
-        services.AddScoped<ICallForServiceService, CallForServiceService>();
-        services.AddScoped<IUnitService, UnitService>();
+        services.AddSingleton<ICallForServiceService, CallForServiceService>();
 
-        services.AddTransient<IAuthentication, Authentication>();
+        services.AddHttpClient<ICallCommentService, CallCommentService>();
+        services.AddSingleton<ICallCommentService, CallCommentService>();
+
+        services.AddHttpClient<IUnitService, UnitService>();
+        services.AddSingleton<IUnitService, UnitService>();
+
+        services.AddHttpClient<IDispatcherService, DispatcherService>();
+        services.AddSingleton<IDispatcherService, DispatcherService>();
+
+        services.AddSingleton<IApplication, Application>();
+        services.AddSingleton<IUserBotFactory, UserBotFactory>();
+
+        services.AddSingleton<ICadSimulator, CadSimulator>();
     })
     .UseSerilog()
     .Build();
 
-var svc = ActivatorUtilities.CreateInstance<Authentication>(host.Services);
-svc.PrintAllUnits().Wait();
+var app = ActivatorUtilities.CreateInstance<Application>(host.Services);
 
-Console.WriteLine("Hi");
+app.Run().Wait();
 
 
 static void BuildConfig(IConfigurationBuilder builder)

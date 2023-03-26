@@ -34,7 +34,7 @@ public class UnitService : IUnitService
 			{
 				UnitNumber = createDTO.UnitNumber,
 				UserId = createDTO.UserId,
-				Status = "Unavailable",
+				Status = createDTO.Status,
 				TimeStatusAssigned = DateTime.Now
 			};
 
@@ -62,7 +62,7 @@ public class UnitService : IUnitService
 				{
 					UnitNumber = createDTO.UnitNumber,
 					UserId = userCreationResponse.Id,
-					Status = "Unavailable",
+					Status = createDTO.Status,
 					TimeStatusAssigned = DateTime.Now
 				};
 

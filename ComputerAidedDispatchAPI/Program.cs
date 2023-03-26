@@ -115,8 +115,11 @@ if (app.Environment.IsDevelopment())
      app.UseSwaggerUI();
 }
 
-// Must use more advanced docker skills in order to implement Https redirection:
-// app.UseHttpsRedirection();
+/* Must use more advanced docker skills in order to implement Https redirection:
+ *  Note: I spent two days trying to fix my Docker and Docker-compose network 
+ *  before realizing this middleware problem! X-/
+ *  app.UseHttpsRedirection();
+*/
 
 app.UseAuthentication();
 app.UseAuthorization();

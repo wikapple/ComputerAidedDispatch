@@ -1,5 +1,4 @@
 ﻿using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.DispatcherDTOs;
-using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.UnitDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services.IServices
 {
-    public interface IUnitService
+    public interface IDispatcherService
     {
-        Task<T> GetAllAsync<T>();
-
-        Task<T> CreateAsync<T>(UnitAndUserCreateDTO dto, string token);
+        public Task<T> CreateAsync<T>(DispatcherAndUserCreateDTO dto, string token);
     }
 }
