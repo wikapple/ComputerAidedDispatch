@@ -83,7 +83,7 @@ namespace ComputerAidedDispatchAPI.Service
 
             if (callCreated != null)
             {
-                if (createDTO.AssignedUnitIds.Any())
+                if (createDTO.AssignedUnitIds != null && createDTO.AssignedUnitIds.Count > 0)
                 {
                     AssignUnits(callCreated.Id, createDTO.AssignedUnitIds);
                 }

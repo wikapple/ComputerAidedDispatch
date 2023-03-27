@@ -3,6 +3,7 @@ using ComputerAidedDispatchAIDispatcherConsoleApp.Models;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.CallForServiceDTOs;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Services.IServices;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,15 +24,28 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             cadUrl = configuration.GetConnectionString("BaseApiUrl");
         }
 
-        public Task<T> CreateAsync<T>(CallForServiceCreateDTO dto, string token)
+        // Creates a call for service, returns the CallId:
+        public async Task<int?> CreateAsync(CallForServiceCreateDTO dto, string token)
         {
-            return SendAsync<T>(new APIRequest()
+            var response =  await SendAsync<APIResponse>(new APIRequest()
             {
                 ApiType = SD.ApiType.POST,
                 Data = dto,
-                Url = $@"{cadUrl}/api/CallComments",
+                Url = $@"{cadUrl}/api/CallsForService",
                 Token = token
             });
+
+            if (response != null && response.IsSuccess)
+            {
+                CallForServiceReadDTO returnedDto = JsonConvert.DeserializeObject<CallForServiceReadDTO>(Convert.ToString(response.Result)!)!;
+                if (returnedDto != null)
+                {
+                    return returnedDto!.Id;
+                }
+
+            }
+            return null;
+
         }
 
         public Task<T> DeleteAsync<T>(int id, string token)
@@ -39,7 +53,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.DELETE,
-                Url = $@"{cadUrl}/api/CallComments",
+                Url = $@"{cadUrl}/api/CallsForService",
                 Token = token
             });
         }
@@ -49,7 +63,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = $@"{cadUrl}/api/CallComments",
+                Url = $@"{cadUrl}/api/CallsForService",
                 Token = token
             });
         }
@@ -59,7 +73,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = $@"{cadUrl}/api/CallComments/{id}",
+                Url = $@"{cadUrl}/api/CallsForService/{id}",
                 Token = token
             });
         }
@@ -70,7 +84,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             {
                 ApiType = SD.ApiType.PUT,
                 Data = dto,
-                Url = $@"{cadUrl}/api/CallComments/{dto.Id}",
+                Url = $@"{cadUrl}/api/CallsForService/{dto.Id}",
                 Token = token
             });
         }

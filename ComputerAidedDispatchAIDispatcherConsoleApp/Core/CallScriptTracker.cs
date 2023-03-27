@@ -59,22 +59,23 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
             callId ??= id;
             ActionTaken(timeoutModifier : .2);
         }
-        public int CallId { get { return CallId; } }
+        public int? CallId { get { return callId; } }
 
 
         // Step 2: Assign units:
-        private int unitsAssigned = 0;
+        Dictionary<string, string> AssignedUnitsStatus= new Dictionary<string, string>();
+        
         public bool AreEnoughUnitsAssigned()
         {
-            return unitsAssigned >= _callScript.NumberUnitsNeeded;
+            return AssignedUnitsStatus.Count >= _callScript.NumberUnitsNeeded;
         }
-        public int UnitsNeeded()
+        public int UnitsNeeded
         {
-            return _callScript.NumberUnitsNeeded - unitsAssigned;
+            get{ return _callScript.NumberUnitsNeeded - AssignedUnitsStatus.Count; }
         }
-        public void AssignUnit(int numberUnitsAssigned = 1)
+        public void AssignUnit(string unitNumber)
         {
-            unitsAssigned += numberUnitsAssigned;
+            AssignedUnitsStatus.Add(unitNumber, "Assigned");
 
             if(AreEnoughUnitsAssigned())
             {

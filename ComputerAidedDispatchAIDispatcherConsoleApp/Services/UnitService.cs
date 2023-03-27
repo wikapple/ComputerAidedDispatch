@@ -3,6 +3,7 @@ using ComputerAidedDispatchAIDispatcherConsoleApp.Models;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.UnitDTOs;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Services.IServices;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,34 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
                 Url = cadUrl + "/api/Units",
 
             });
+        }
+
+        public async Task<List<UnitReadDTO>>? GetAllAvailableAsync(string? token = null)
+        {
+            var response = await SendAsync<APIResponse>(new Models.APIRequest()
+            {
+                ApiType = SD.ApiType.GET,
+                Url = cadUrl + "/api/Units?status=available"
+            });
+
+            if (response != null && response.IsSuccess)
+            {
+                List<UnitReadDTO> availableUnits = JsonConvert.DeserializeObject<List<UnitReadDTO>>(Convert.ToString(response.Result)!)!;
+                return availableUnits;
+            }
+            return null;
+        }
+
+        public async Task<bool> AssignUnitToCall(string unitNumber, int callId, string token)
+        {
+            var response = await SendAsync<APIResponse>(new APIRequest()
+            {
+                ApiType = SD.ApiType.PUT,
+                Url = cadUrl + @$"/api/Units/{unitNumber}/AssignCallNumber/{callId}",
+                Token = token
+            });
+
+            return response != null && response.IsSuccess;
         }
     }
 }

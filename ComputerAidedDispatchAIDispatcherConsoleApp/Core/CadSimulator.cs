@@ -1,6 +1,7 @@
 ﻿using ComputerAidedDispatchAIDispatcherConsoleApp.Core.ICore;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.CallForServiceDTOs;
+using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.UnitDTOs;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Services.IServices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -51,7 +52,7 @@ public class CadSimulator : ICadSimulator
                 // If callRunner's timeout period is over, take next action
                 if (callRunner.IsTimeoutPeriodOver)
                 {
-                    TakeCallAction(callRunner);
+                    await TakeCallAction(callRunner);
                 }
                 // If callRunner is complete, remove it
                 if (callRunner.IsCallClosed)
@@ -61,7 +62,7 @@ public class CadSimulator : ICadSimulator
             }
 
             // Decide whether to add more calls or not to _currentCallRunners
-            if(IsNewScriptBeingAdded(_currentCallTrackers.Count(), 12, loopIterationsWithoutAddingCall))
+            if(IsNewScriptBeingAdded(_currentCallTrackers.Count, 12, loopIterationsWithoutAddingCall))
             {
                 _log.LogInformation("loop itertions set to 0");
                 loopIterationsWithoutAddingCall = 0;
@@ -104,25 +105,48 @@ public class CadSimulator : ICadSimulator
     }
 
     // Decide what action to take:
-    private async void TakeCallAction(CallScriptTracker callTracker)
+    private async Task TakeCallAction(CallScriptTracker callTracker)
     {
         // is call created?
-        if(callTracker.IsCallCreated == false)
+        if (callTracker.IsCallCreated == false)
         {
-            var response = await _callService.CreateAsync<APIResponse>(callTracker.CallScript.callModel, _dispatcherToken!);
-            if (response.IsSuccess)
+            int? returnedCallId = await _callService.CreateAsync(callTracker.CallScript.callModel, _dispatcherToken!);
+            if (returnedCallId != null)
             {
-                CallForServiceReadDTO dto = JsonConvert.DeserializeObject<CallForServiceReadDTO>(Convert.ToString(response.Result));
-                if (dto != null)
-                {
-                    callTracker.SetCallId(dto.Id);
-                }
-            } 
+                callTracker.SetCallId((int)returnedCallId);
+            }
+                
         }
         // are all units assigned?
         else if (callTracker.AreEnoughUnitsAssigned() == false)
         {
+            // get a list of available units
+            List<UnitReadDTO>? availableUnits = await _unitService.GetAllAvailableAsync();
 
+            if(availableUnits != null && availableUnits.Count > 0)
+            {
+                List<UnitReadDTO> unitsToAssign;
+                if(availableUnits.Count > callTracker.UnitsNeeded)
+                {
+                    unitsToAssign = availableUnits.Take(callTracker.UnitsNeeded).ToList();
+                }
+                else
+                {
+                    unitsToAssign = availableUnits;
+                }
+                    
+                foreach (var unit in unitsToAssign)
+                {
+                    bool unitAssignmentSuccessful = 
+                        await _unitService.AssignUnitToCall(unit.UnitNumber, (int)callTracker.CallId!, _dispatcherToken!);
+
+                    if (unitAssignmentSuccessful)
+                    {
+                        callTracker.AssignUnit(unit.UnitNumber);
+                    }
+                }     
+            }
+           
         }
         // are all units en route?
 

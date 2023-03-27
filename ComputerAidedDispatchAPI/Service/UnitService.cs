@@ -105,7 +105,7 @@ public class UnitService : IUnitService
 
 		if(callNumber != null && status != null)
 		{
-			filter = u => u.CallNumber == callNumber && u.Status == status;
+			filter = u => u.CallNumber == callNumber && u.Status.ToLower() == status.ToLower();
 		}
 		else if(callNumber != null)
 		{
@@ -113,7 +113,7 @@ public class UnitService : IUnitService
         }
 		else if(status != null)
 		{
-			filter = u => u.Status == status;
+			filter = u => u.Status.ToLower() == status.ToLower();
         }
 		else
 		{
