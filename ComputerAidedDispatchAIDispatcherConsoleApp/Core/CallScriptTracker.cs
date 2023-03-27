@@ -63,19 +63,23 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
 
 
         // Step 2: Assign units:
-        Dictionary<string, string> AssignedUnitsStatus= new Dictionary<string, string>();
-        
+        Dictionary<string, string> assignedUnitsStatus= new Dictionary<string, string>();
+        public List<string> getUnitsByStatus(string status)
+        {
+            return assignedUnitsStatus.Keys.Where(key => assignedUnitsStatus.GetValueOrDefault(key) == status).ToList();
+        }
+
         public bool AreEnoughUnitsAssigned()
         {
-            return AssignedUnitsStatus.Count >= _callScript.NumberUnitsNeeded;
+            return assignedUnitsStatus.Count >= _callScript.NumberUnitsNeeded;
         }
         public int UnitsNeeded
         {
-            get{ return _callScript.NumberUnitsNeeded - AssignedUnitsStatus.Count; }
+            get{ return _callScript.NumberUnitsNeeded - assignedUnitsStatus.Count; }
         }
         public void AssignUnit(string unitNumber)
         {
-            AssignedUnitsStatus.Add(unitNumber, "Assigned");
+            assignedUnitsStatus.Add(unitNumber, "Assigned");
 
             if(AreEnoughUnitsAssigned())
             {
@@ -83,16 +87,14 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
             }
         }
 
-        // Step 3: Show units en route:
-        private int unitsEnRoute = 0;
-        
+        // Step 3: Show units en route:        
         public bool AllUnitsEnRoute()
         {
-            return unitsEnRoute >= _callScript.NumberUnitsNeeded;
+            return assignedUnitsStatus.Values.All(status  => status == "En Route");
         }
-        public void increaseUnitsEnRoute(int unitsEnRoute = 1)
+        public void ShowUnitEnRoute(string unitNumber)
         {
-            unitsEnRoute += unitsEnRoute;
+            assignedUnitsStatus[unitNumber] = "En Route";
 
             if (AllUnitsEnRoute())
             {
@@ -101,18 +103,15 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
         }
 
         // Step 4:Put units on scene
-        private int unitsOnScene = 0;
-
         public bool AllUnitsOnScene()
         {
-            return unitsOnScene >= _callScript.NumberUnitsNeeded;
+            return assignedUnitsStatus.Values.All(status => status == "On Scene");
         }
-
-        public void SetUnitOnScene(int unitsArriving = 1)
+        public void ShowUnitOnScene(string unitNumber)
         {
-            unitsOnScene += unitsArriving;
+            assignedUnitsStatus[unitNumber] = "En Route";
 
-            if (AllUnitsOnScene())
+            if (AllUnitsEnRoute())
             {
                 ActionTaken(timeoutModifier: 2, minimumSecondsTimeout: 20);
             }
@@ -121,7 +120,6 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
                 ActionTaken();
             }
         }
-
         // Step 5: add call comments
         private int callCommentsAdded = 0;
 

@@ -17,4 +17,7 @@ public interface IUnitService
     Task<T> CreateAsync<T>(UnitAndUserCreateDTO dto, string token);
 
     public Task<bool> AssignUnitToCall(string unitNumber, int callId, string token);
-}   
+    public Task<bool> UpdateUnitStatus(string unitNumber, string status, string token);
+
+
+}

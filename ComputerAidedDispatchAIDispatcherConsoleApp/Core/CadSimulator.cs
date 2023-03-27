@@ -149,13 +149,46 @@ public class CadSimulator : ICadSimulator
            
         }
         // are all units en route?
+        else if(callTracker.AllUnitsEnRoute() == false)
+        {
+            List<string> unitNumbersAssigned = callTracker.getUnitsByStatus("Assigned");
 
+            foreach(var unitNumber in unitNumbersAssigned)
+            {
+                bool statusChangeSuccess = await _unitService.UpdateUnitStatus(unitNumber, "En Route", _dispatcherToken!);
+
+                if (statusChangeSuccess)
+                {
+                    callTracker.ShowUnitEnRoute(unitNumber);
+                }
+            }
+        }
         // and units on scene?
+        else if(callTracker.AllUnitsOnScene() == false)
+        {
+            List<string> unitNumbersEnRoute = callTracker.getUnitsByStatus("En Route");
 
+            string randomUnitNumber = unitNumbersEnRoute[_random.Next(unitNumbersEnRoute.Count)];
+
+          
+            bool statusChangeSuccess = await _unitService.UpdateUnitStatus(randomUnitNumber, "On Scene", _dispatcherToken!);
+
+            if (statusChangeSuccess)
+            {
+                callTracker.ShowUnitOnScene(randomUnitNumber);
+            }
+            
+        }
         // are all call comments added?
+        else if(callTracker.AllCommentsAdded() == false)
+        {
 
+        }
         // has call been deleted from api?
+        else if(callTracker.IsCallClosed == false)
+        {
 
+        }
     }
 
     // Use of Random to decide whether a new call will be created:
@@ -163,7 +196,7 @@ public class CadSimulator : ICadSimulator
     {
         var randomDouble = _random.NextDouble();
         var chanceComputation = listCount < listMax ?
-             (randomDouble + (iterationsFalse * .2)) / (listCount * .2 + .8) :
+             (randomDouble + (iterationsFalse * .1)) / (listCount * .2 + .8) :
                 0.0;
         _log.LogInformation($"random double generated: {chanceComputation}");
         return chanceComputation > .9;

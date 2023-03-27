@@ -74,5 +74,21 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
 
             return response != null && response.IsSuccess;
         }
+
+        public async Task<bool> UpdateUnitStatus(string unitNumber, string status, string token)
+        {
+            var response = await SendAsync<APIResponse>(new APIRequest()
+            {
+                ApiType = SD.ApiType.PUT,
+                Url = cadUrl + @$"/api/Units/{unitNumber}/UpdateStatus/{status}",
+                Token = token
+            });
+
+            return response != null && response.IsSuccess;
+        }
+
     }
+
+
 }
+
