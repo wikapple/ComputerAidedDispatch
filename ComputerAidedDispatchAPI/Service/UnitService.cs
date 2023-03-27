@@ -139,7 +139,7 @@ public class UnitService : IUnitService
 
 		if (unit != null)
 		{
-			unit.CallNumber = updateDTO.CallNumber;
+			unit.CallNumber ??= updateDTO.CallNumber;
 			unit.Status = updateDTO.Status;
 
 			var newUnit = await _unitRepository.UpdateAsync(unit);

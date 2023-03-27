@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core.ICore
 {
-    public interface ICallScriptRunner
+    public interface ICallScriptTracker
     {
         public bool IsScriptRunnerComplete { get; }
         public bool IsTimeoutPeriodOver { get; }

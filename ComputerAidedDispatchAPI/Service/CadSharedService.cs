@@ -30,7 +30,7 @@ public class CadSharedService : ICadSharedService
     {
         var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
 
-        if (unit != null &&
+        if (unit != null && unit.CallNumber == null &&
             (callNumber == null || await _callRepository.GetAsync(call => call.Id == callNumber) != null))
         {
             unit.CallNumber = callNumber;

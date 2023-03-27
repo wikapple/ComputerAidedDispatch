@@ -1,6 +1,9 @@
 ﻿using ComputerAidedDispatchAIDispatcherConsoleApp.Core.ICore;
+using ComputerAidedDispatchAIDispatcherConsoleApp.Models;
+using ComputerAidedDispatchAIDispatcherConsoleApp.Models.DTOs.CallForServiceDTOs;
 using ComputerAidedDispatchAIDispatcherConsoleApp.Services.IServices;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,51 +16,132 @@ public class CadSimulator : ICadSimulator
 {
 
     private readonly ILogger<CadSimulator> _log;
-    private string _dispatcherToken;
-    private List<ICallScriptRunner> _currentCallRunners;
-    private DateTime timeSinceLastCallWasAdded;
+    private readonly IUnitService _unitService;
+    private readonly ICallForServiceService _callService;
+    private readonly ICallCommentService _commentService;
+    private string? _dispatcherToken;
+    List<CallScriptTracker> _currentCallTrackers;
+    private readonly Random _random;
 
     public bool ContinueSimulator { get; set; }
 
 
-    public CadSimulator(ILogger<CadSimulator> log)
+    public CadSimulator(ILogger<CadSimulator> log, IUnitService unitService, ICallForServiceService callForServiceService, ICallCommentService callCommentService)
     {
-        
+
         _log = log;
+        _unitService = unitService;
+        _callService = callForServiceService;
+        _commentService = callCommentService;
+
         ContinueSimulator = true;
-        _currentCallRunners = new();
-        timeSinceLastCallWasAdded = DateTime.Now;
+        _random = new Random();
     }
 
     public async Task Start(string dispatcherToken)
     {
         _dispatcherToken = dispatcherToken;
-
+        _currentCallTrackers = new();
+        int loopIterationsWithoutAddingCall = 0;
         while (ContinueSimulator)
         {
             // Take action for each call runner if necessary
-            foreach(var callRunner in _currentCallRunners)
+            foreach (var callRunner in _currentCallTrackers)
             {
                 // If callRunner's timeout period is over, take next action
                 if (callRunner.IsTimeoutPeriodOver)
                 {
-                    callRunner.TakeAction();
+                    TakeCallAction(callRunner);
                 }
                 // If callRunner is complete, remove it
-                if(callRunner.IsScriptRunnerComplete)
+                if (callRunner.IsCallClosed)
                 {
-                    _currentCallRunners.Remove(callRunner);
+                    _currentCallTrackers.Remove(callRunner);
                 }
             }
+
             // Decide whether to add more calls or not to _currentCallRunners
+            if(IsNewScriptBeingAdded(_currentCallTrackers.Count(), 12, loopIterationsWithoutAddingCall))
+            {
+                _log.LogInformation("loop itertions set to 0");
+                loopIterationsWithoutAddingCall = 0;
+
+                _currentCallTrackers.Add(new CallScriptTracker(CallScriptGenerator()));
+
+                _log.LogInformation($"Current call count: {_currentCallTrackers.Count()}");
+
+            }
+            else
+            {
+                loopIterationsWithoutAddingCall++;
+                _log.LogInformation($"Loops without adding call: {loopIterationsWithoutAddingCall}");
+            }
 
             // Sleep:
             Thread.Sleep(5000);
 
         }
-
-
         return;
-        
+
+    }
+
+    // Easy test version of CallScript
+    private static CallScript CallScriptGenerator()
+    {
+        return new CallScript()
+        {
+            callModel = new()
+            {
+                CallType = "Accident",
+                Address = "10 Main Street",
+                Caller_info = "Ted",
+                Description = "Red pickup vs white unicorn",
+
+            },
+            NumberUnitsNeeded = 2,
+            CallCommentsToAdd = new List<string> { "blah", "blah, blah", "blah, blah, blah" }
+        };
+    }
+
+    // Decide what action to take:
+    private async void TakeCallAction(CallScriptTracker callTracker)
+    {
+        // is call created?
+        if(callTracker.IsCallCreated == false)
+        {
+            var response = await _callService.CreateAsync<APIResponse>(callTracker.CallScript.callModel, _dispatcherToken!);
+            if (response.IsSuccess)
+            {
+                CallForServiceReadDTO dto = JsonConvert.DeserializeObject<CallForServiceReadDTO>(Convert.ToString(response.Result));
+                if (dto != null)
+                {
+                    callTracker.SetCallId(dto.Id);
+                }
+            } 
+        }
+        // are all units assigned?
+        else if (callTracker.AreEnoughUnitsAssigned() == false)
+        {
+
+        }
+        // are all units en route?
+
+        // and units on scene?
+
+        // are all call comments added?
+
+        // has call been deleted from api?
+
+    }
+
+    // Use of Random to decide whether a new call will be created:
+    private bool IsNewScriptBeingAdded(int listCount, int listMax, int iterationsFalse)
+    {
+        var randomDouble = _random.NextDouble();
+        var chanceComputation = listCount < listMax ?
+             (randomDouble + (iterationsFalse * .2)) / (listCount * .2 + .8) :
+                0.0;
+        _log.LogInformation($"random double generated: {chanceComputation}");
+        return chanceComputation > .9;
     }
 }

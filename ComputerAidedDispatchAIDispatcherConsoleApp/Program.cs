@@ -52,6 +52,7 @@ var host = Host.CreateDefaultBuilder()
         services.AddSingleton<IUserBotFactory, UserBotFactory>();
 
         services.AddSingleton<ICadSimulator, CadSimulator>();
+
     })
     .UseSerilog()
     .Build();
