@@ -48,14 +48,16 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
 
         }
 
-        public Task<T> DeleteAsync<T>(int id, string token)
+        public async Task<bool> DeleteAsync(int id, string token)
         {
-            return SendAsync<T>(new APIRequest()
+            var returnVal = await SendAsync<APIResponse>(new APIRequest()
             {
                 ApiType = SD.ApiType.DELETE,
-                Url = $@"{cadUrl}/api/CallsForService",
+                Url = $@"{cadUrl}/api/CallsForService/{id}",
                 Token = token
             });
+
+            return returnVal == null;
         }
 
         public Task<T> GetAllAsync<T>(string token)

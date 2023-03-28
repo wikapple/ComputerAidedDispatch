@@ -44,41 +44,33 @@ public class CadSimulator : ICadSimulator
         _dispatcherToken = dispatcherToken;
         _currentCallTrackers = new();
         int loopIterationsWithoutAddingCall = 0;
+
         while (ContinueSimulator)
         {
-            // Take action for each call runner if necessary
-            foreach (var callRunner in _currentCallTrackers)
-            {
-                // If callRunner's timeout period is over, take next action
-                if (callRunner.IsTimeoutPeriodOver)
-                {
-                    await TakeCallAction(callRunner);
-                }
-                // If callRunner is complete, remove it
-                if (callRunner.IsCallClosed)
-                {
-                    _currentCallTrackers.Remove(callRunner);
-                }
+            // Check if each callTracker's timeout period is over, if so, take next step in the call script:
+            foreach (var callTracker in _currentCallTrackers.Where(ct => ct.IsTimeoutPeriodOver))
+            {               
+                    await TakeCallAction(callTracker);
             }
+
+            // Remove any call scripts from the list that are finished:
+            _currentCallTrackers.RemoveAll(callTracker => callTracker.IsCallClosed);
+            
 
             // Decide whether to add more calls or not to _currentCallRunners
             if(IsNewScriptBeingAdded(_currentCallTrackers.Count, 12, loopIterationsWithoutAddingCall))
             {
-                _log.LogInformation("loop itertions set to 0");
                 loopIterationsWithoutAddingCall = 0;
 
                 _currentCallTrackers.Add(new CallScriptTracker(CallScriptGenerator()));
-
-                _log.LogInformation($"Current call count: {_currentCallTrackers.Count()}");
 
             }
             else
             {
                 loopIterationsWithoutAddingCall++;
-                _log.LogInformation($"Loops without adding call: {loopIterationsWithoutAddingCall}");
             }
 
-            // Sleep:
+            // Sleep 5 seconds:
             Thread.Sleep(5000);
 
         }
@@ -115,7 +107,7 @@ public class CadSimulator : ICadSimulator
             {
                 callTracker.SetCallId((int)returnedCallId);
             }
-                
+
         }
         // are all units assigned?
         else if (callTracker.AreEnoughUnitsAssigned() == false)
@@ -123,10 +115,10 @@ public class CadSimulator : ICadSimulator
             // get a list of available units
             List<UnitReadDTO>? availableUnits = await _unitService.GetAllAvailableAsync();
 
-            if(availableUnits != null && availableUnits.Count > 0)
+            if (availableUnits != null && availableUnits.Count > 0)
             {
                 List<UnitReadDTO> unitsToAssign;
-                if(availableUnits.Count > callTracker.UnitsNeeded)
+                if (availableUnits.Count > callTracker.UnitsNeeded)
                 {
                     unitsToAssign = availableUnits.Take(callTracker.UnitsNeeded).ToList();
                 }
@@ -134,26 +126,26 @@ public class CadSimulator : ICadSimulator
                 {
                     unitsToAssign = availableUnits;
                 }
-                    
+
                 foreach (var unit in unitsToAssign)
                 {
-                    bool unitAssignmentSuccessful = 
+                    bool unitAssignmentSuccessful =
                         await _unitService.AssignUnitToCall(unit.UnitNumber, (int)callTracker.CallId!, _dispatcherToken!);
 
                     if (unitAssignmentSuccessful)
                     {
                         callTracker.AssignUnit(unit.UnitNumber);
                     }
-                }     
+                }
             }
-           
+
         }
         // are all units en route?
-        else if(callTracker.AllUnitsEnRoute() == false)
+        else if (callTracker.AllUnitsEnRoute() == false)
         {
             List<string> unitNumbersAssigned = callTracker.getUnitsByStatus("Assigned");
 
-            foreach(var unitNumber in unitNumbersAssigned)
+            foreach (var unitNumber in unitNumbersAssigned)
             {
                 bool statusChangeSuccess = await _unitService.UpdateUnitStatus(unitNumber, "En Route", _dispatcherToken!);
 
@@ -164,31 +156,42 @@ public class CadSimulator : ICadSimulator
             }
         }
         // and units on scene?
-        else if(callTracker.AllUnitsOnScene() == false)
+        else if (callTracker.AllUnitsOnScene() == false)
         {
             List<string> unitNumbersEnRoute = callTracker.getUnitsByStatus("En Route");
 
             string randomUnitNumber = unitNumbersEnRoute[_random.Next(unitNumbersEnRoute.Count)];
 
-          
+
             bool statusChangeSuccess = await _unitService.UpdateUnitStatus(randomUnitNumber, "On Scene", _dispatcherToken!);
 
             if (statusChangeSuccess)
             {
                 callTracker.ShowUnitOnScene(randomUnitNumber);
             }
-            
+
         }
         // are all call comments added?
-        else if(callTracker.AllCommentsAdded() == false)
+        else if (callTracker.AllCommentsAdded() == false)
         {
-
+            string commentToAdd = callTracker.GetNextCallCommentToAdd()!;
+            bool commentAddedSuccessfully = await _commentService.CreateAsync(commentToAdd, (int)callTracker.CallId!, _dispatcherToken!);
+            if (commentAddedSuccessfully)
+            {
+                callTracker.SetCallCommentAdded();
+            }
         }
         // has call been deleted from api?
-        else if(callTracker.IsCallClosed == false)
+        else if (callTracker.IsCallClosed == false)
         {
+            bool callDeletedSuccessfully = await _callService.DeleteAsync((int)callTracker.CallId!, _dispatcherToken!);
 
+            if (callDeletedSuccessfully)
+            {
+                callTracker.SetCallAsClosed();
+            }
         }
+        
     }
 
     // Use of Random to decide whether a new call will be created:
@@ -196,7 +199,7 @@ public class CadSimulator : ICadSimulator
     {
         var randomDouble = _random.NextDouble();
         var chanceComputation = listCount < listMax ?
-             (randomDouble + (iterationsFalse * .1)) / (listCount * .2 + .8) :
+             (randomDouble + (iterationsFalse * .05)) / (listCount * .5 + .8) :
                 0.0;
         _log.LogInformation($"random double generated: {chanceComputation}");
         return chanceComputation > .9;

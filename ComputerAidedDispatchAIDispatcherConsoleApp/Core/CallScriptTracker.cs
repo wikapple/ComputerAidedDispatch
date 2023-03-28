@@ -90,7 +90,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
         // Step 3: Show units en route:        
         public bool AllUnitsEnRoute()
         {
-            return assignedUnitsStatus.Values.All(status  => status == "En Route");
+            return assignedUnitsStatus.Values.All(status  => (status == "En Route") || (status == "On Scene"));
         }
         public void ShowUnitEnRoute(string unitNumber)
         {
@@ -98,7 +98,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
 
             if (AllUnitsEnRoute())
             {
-                ActionTaken(timeoutModifier: 2, minimumSecondsTimeout: 20);
+                ActionTaken(minimumSecondsTimeout: 20);
             }
         }
 
@@ -109,15 +109,15 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
         }
         public void ShowUnitOnScene(string unitNumber)
         {
-            assignedUnitsStatus[unitNumber] = "En Route";
+            assignedUnitsStatus[unitNumber] = "On Scene";
 
             if (AllUnitsEnRoute())
             {
-                ActionTaken(timeoutModifier: 2, minimumSecondsTimeout: 20);
+                ActionTaken(minimumSecondsTimeout: 20);
             }
             else
             {
-                ActionTaken();
+                ActionTaken(timeoutModifier: .5);
             }
         }
         // Step 5: add call comments
@@ -138,11 +138,11 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Core
 
             if(AllCommentsAdded())
             {
-                ActionTaken(timeoutModifier: 2, minimumSecondsTimeout: 20);
+                ActionTaken(timeoutModifier: 1.5, minimumSecondsTimeout: 20);
             }
             else
             {
-                ActionTaken(minimumSecondsTimeout: 10);
+                ActionTaken(timeoutModifier: .75, minimumSecondsTimeout: 10);
             }
         }
 

@@ -151,7 +151,7 @@ namespace ComputerAidedDispatchAPI.Service
             var callToDelete = await _callRepository.GetAsync(cfs => cfs.Id == callId);
             if(callToDelete != null)
             {
-                if (callToDelete!.Units.Any())
+                if (callToDelete.Units != null && callToDelete!.Units.Any())
                 {
                     await RemoveUnits(callToDelete.Id, callToDelete.Units.Select(unit => unit.UnitNumber).ToList());
                 }

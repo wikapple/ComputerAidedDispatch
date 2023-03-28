@@ -35,7 +35,7 @@ public class CallCommentService : BaseService, ICallCommentService
         {
             ApiType = SD.ApiType.POST,
             Data = dto,
-            Url = $@"{cadUrl}/api/CallsComments",
+            Url = $@"{cadUrl}/api/CallComments",
             Token = token
         });
 

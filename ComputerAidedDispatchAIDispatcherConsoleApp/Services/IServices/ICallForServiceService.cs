@@ -13,5 +13,5 @@ public interface ICallForServiceService
     Task<T> GetAsync<T>(int id, string token);
     Task<int?> CreateAsync(CallForServiceCreateDTO dto, string token);
     Task<T> UpdateAsync<T>(CallForServiceUpdateDTO dto, string token);
-    Task<T> DeleteAsync<T>(int id, string token);
+    Task<bool> DeleteAsync(int id, string token);
 }
