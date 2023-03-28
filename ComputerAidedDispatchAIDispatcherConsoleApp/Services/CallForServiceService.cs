@@ -21,7 +21,7 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
         public CallForServiceService(IHttpClientFactory clientFactory, IConfiguration configuration) : base(clientFactory)
         {
             _clientFactory= clientFactory;
-            cadUrl = configuration.GetConnectionString("BaseApiUrl");
+            cadUrl = configuration.GetConnectionString("BaseApiUrl")!;
         }
 
         // Creates a call for service, returns the CallId:
