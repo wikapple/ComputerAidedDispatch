@@ -1,4 +1,5 @@
 ﻿using ComputerAidedDispatchAPI.Models;
+using ComputerAidedDispatchAPI.Models.DTOs.UnitDTOs;
 using System.Linq.Expressions;
 
 namespace ComputerAidedDispatchAPI.Repository.IRepository

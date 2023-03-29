@@ -35,7 +35,7 @@ public class UnitService : IUnitService
 				UnitNumber = createDTO.UnitNumber,
 				UserId = createDTO.UserId,
 				Status = createDTO.Status,
-				TimeStatusAssigned = DateTime.Now
+				UpdatedDate = DateTime.Now,
 			};
 
 			await _unitRepository.CreateAsync(newUnit);
@@ -63,7 +63,7 @@ public class UnitService : IUnitService
 					UnitNumber = createDTO.UnitNumber,
 					UserId = userCreationResponse.Id,
 					Status = createDTO.Status,
-					TimeStatusAssigned = DateTime.Now
+					UpdatedDate = DateTime.Now
 				};
 
 				await _unitRepository.CreateAsync(unit);
@@ -127,7 +127,17 @@ public class UnitService : IUnitService
 
 	public async Task<List<UnitDetailsReadDTO>> GetAllDetailsAsync(int? callNumber = null, string? status = null)
 	{
-        List<Unit> unitList = await _unitRepository.GetAllAsync(includeProperties: "UserInfo,CallForService");
+        Expression<Func<Unit, bool>>? filter;
+        if (status != null)
+        {
+            filter = u => u.Status.ToLower() == status.ToLower();
+		}
+		else
+		{
+			filter = null;
+		}
+
+        List<Unit> unitList = await _unitRepository.GetAllAsync(filter, includeProperties: "UserInfo,CallForService");
         return unitList.Select(u => _mapper.Map<UnitDetailsReadDTO>(u)).ToList();
     }
 
@@ -139,9 +149,8 @@ public class UnitService : IUnitService
 
 		if (unit != null)
 		{
-			unit.CallNumber ??= updateDTO.CallNumber;
 			unit.Status = updateDTO.Status;
-
+			unit.CallNumber = updateDTO.CallNumber;
 			var newUnit = await _unitRepository.UpdateAsync(unit);
 
 			return _mapper.Map<UnitReadDTO>(newUnit);

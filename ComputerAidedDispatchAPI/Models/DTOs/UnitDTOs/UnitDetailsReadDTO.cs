@@ -8,8 +8,7 @@ namespace ComputerAidedDispatchAPI.Models.DTOs.UnitDTOs
         public string Name { get; set; }
         public CallForServiceReadDTO? CallForService { get; set; }
         public string Status { get; set; }
-        public DateTime TimeStatusAssigned { get; set; }
-        public TimeSpan StatusDuration { get; set; }
+        public DateTime UpdatedDate { get; set; }
 
     }
 }

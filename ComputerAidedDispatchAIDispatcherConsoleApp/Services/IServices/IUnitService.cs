@@ -12,7 +12,7 @@ public interface IUnitService
 {
     Task<T> GetAllAsync<T>();
 
-    Task<List<UnitReadDTO>>? GetAllAvailableAsync(string? token = null);
+    Task<List<UnitDetailsReadDTO>>? GetAllAvailableAsync(string? token = null);
 
     Task<T> CreateAsync<T>(UnitAndUserCreateDTO dto, string token);
 

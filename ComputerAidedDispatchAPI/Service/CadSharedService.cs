@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ComputerAidedDispatchAPI.Models;
 using ComputerAidedDispatchAPI.Models.DTOs;
 using ComputerAidedDispatchAPI.Models.DTOs.UnitDTOs;
 using ComputerAidedDispatchAPI.Models.DTOs.UserDTOs;
@@ -36,6 +37,7 @@ public class CadSharedService : ICadSharedService
             unit.CallNumber = callNumber;
             unit.Status = "Assigned";
             await _unitRepository.UpdateAsync(unit);
+
             return _mapper.Map<UnitReadDTO>(unit);
         }
         else
@@ -81,14 +83,12 @@ public class CadSharedService : ICadSharedService
         return await _userRepository.Register(registrationRequestDTO);
     }
 
-    public async Task<UnitReadDTO> UpdateStatusAsync(string unitNumber, string status)
+    public async Task<UnitReadDTO>? UpdateStatusAsync(string unitNumber, string status)
     {
         var unit = await _unitRepository.GetAsync(x => x.UnitNumber == unitNumber, includeProperties: "UserInfo");
-
         if (unit != null)
         {
             unit.Status = status;
-
             await _unitRepository.UpdateAsync(unit);
             return _mapper.Map<UnitReadDTO>(unit);
         }

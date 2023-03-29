@@ -113,11 +113,13 @@ public class CadSimulator : ICadSimulator
         else if (callTracker.AreEnoughUnitsAssigned() == false)
         {
             // get a list of available units
-            List<UnitReadDTO>? availableUnits = await _unitService.GetAllAvailableAsync();
+            List<UnitDetailsReadDTO>? availableUnits = await _unitService.GetAllAvailableAsync();
+
+            availableUnits = availableUnits.OrderBy(unit => unit.UpdatedDate).ToList();
 
             if (availableUnits != null && availableUnits.Count > 0)
             {
-                List<UnitReadDTO> unitsToAssign;
+                List<UnitDetailsReadDTO> unitsToAssign;
                 if (availableUnits.Count > callTracker.UnitsNeeded)
                 {
                     unitsToAssign = availableUnits.Take(callTracker.UnitsNeeded).ToList();

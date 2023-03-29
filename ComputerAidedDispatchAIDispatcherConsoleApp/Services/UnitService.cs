@@ -47,17 +47,17 @@ namespace ComputerAidedDispatchAIDispatcherConsoleApp.Services
             });
         }
 
-        public async Task<List<UnitReadDTO>>? GetAllAvailableAsync(string? token = null)
+        public async Task<List<UnitDetailsReadDTO>>? GetAllAvailableAsync(string? token = null)
         {
             var response = await SendAsync<APIResponse>(new Models.APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = cadUrl + "/api/Units?status=available"
+                Url = cadUrl + "/api/Units?getDetails=True&status=available"
             });
 
             if (response != null && response.IsSuccess)
             {
-                List<UnitReadDTO> availableUnits = JsonConvert.DeserializeObject<List<UnitReadDTO>>(Convert.ToString(response.Result)!)!;
+                List<UnitDetailsReadDTO> availableUnits = JsonConvert.DeserializeObject<List<UnitDetailsReadDTO>>(Convert.ToString(response.Result)!)!;
                 return availableUnits;
             }
             return null;

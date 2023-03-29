@@ -24,15 +24,9 @@ public class Unit
     public CallForService? CallForService { get; set; }
 
     
-    private string status;
     [Required]
     public string Status { get; set; }
 
-    public DateTime TimeStatusAssigned { get; set; }
-    public TimeSpan StatusDuration
-    {
-        get { return DateTime.Now.Subtract(TimeStatusAssigned); }
-
-    }
+    public DateTime UpdatedDate { get; set; }
 
 }

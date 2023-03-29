@@ -26,12 +26,12 @@ namespace ComputerAidedDispatchAPI.Service
             if (status != null)
             {
                 var callList = await _callRepository.GetAllAsync(x => x.Status == status, includeProperties: "Units");
-                return callList.Select(c => _mapper.Map<CallForServiceReadDTO>(c)).ToList();    
+                return callList.Select(c => _mapper.Map<CallForServiceReadDTO>(c)).OrderBy(callDTO => callDTO.Id).ToList();    
             }
             else
             {
                 var callList = await _callRepository.GetAllAsync(includeProperties: "Units");
-                return callList.Select(c => _mapper.Map<CallForServiceReadDTO>(c)).ToList();
+                return callList.Select(c => _mapper.Map<CallForServiceReadDTO>(c)).OrderBy(callDTO => callDTO.Id).ToList();
             }
         }
 
@@ -40,12 +40,12 @@ namespace ComputerAidedDispatchAPI.Service
             if (status != null)
             {
                 var callList = await _callRepository.GetAllAsync(x => x.Status == status, includeProperties: "Units,CallComments");
-                return callList.Select(c => _mapper.Map<CallForServiceDetailsReadDTO>(c)).ToList();
+                return callList.Select(c => _mapper.Map<CallForServiceDetailsReadDTO>(c)).OrderBy(callDTO => callDTO.Id).ToList();
             }
             else
             {
                 var callList = await _callRepository.GetAllAsync(includeProperties: "Units,CallComments");
-                return callList.Select(c => _mapper.Map<CallForServiceDetailsReadDTO>(c)).ToList();
+                return callList.Select(c => _mapper.Map<CallForServiceDetailsReadDTO>(c)).OrderBy(callDTO => callDTO.Id).ToList();
             }
         }
 
