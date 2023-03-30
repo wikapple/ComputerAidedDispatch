@@ -81,19 +81,7 @@ public class CadSimulator : ICadSimulator
     // Easy test version of CallScript
     private static CallScript CallScriptGenerator()
     {
-        return new CallScript()
-        {
-            callModel = new()
-            {
-                CallType = "Accident",
-                Address = "10 Main Street",
-                Caller_info = "Ted",
-                Description = "Red pickup vs white unicorn",
-
-            },
-            NumberUnitsNeeded = 2,
-            CallCommentsToAdd = new List<string> { "blah", "blah, blah", "blah, blah, blah" }
-        };
+        return RandomCallScriptGenerator.GetRandomCallScript();
     }
 
     // Decide what action to take:
